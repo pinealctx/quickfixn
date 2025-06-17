@@ -199,6 +199,22 @@ public class Logon : Message
     public bool IsSet(Password val) { return IsSetPassword(); }
     public bool IsSetPassword() { return IsSetField(Tags.Password); }
 
+    public RefCstmApplVerId RefCstmApplVerId
+    {
+        get
+        {
+            RefCstmApplVerId val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(RefCstmApplVerId val) { RefCstmApplVerId = val; }
+    public RefCstmApplVerId Get(RefCstmApplVerId val) { GetField(val); return val; }
+    public bool IsSet(RefCstmApplVerId val) { return IsSetRefCstmApplVerId(); }
+    public bool IsSetRefCstmApplVerId() { return IsSetField(Tags.RefCstmApplVerId); }
+
     public class NoMsgTypesGroup : Group
     {
         public static int[] DefaultFieldOrder = [Tags.RefMsgType, Tags.MsgDirection, 0];

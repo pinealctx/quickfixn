@@ -14,13 +14,6 @@ public class MarketDataSnapshotFullRefresh : Message
         Header.SetField(new MsgType("W"));
     }
 
-    public MarketDataSnapshotFullRefresh(
-            Symbol aSymbol
-        ) : this()
-    {
-        Symbol = aSymbol;
-    }
-
     public MDReqID MDReqID
     {
         get
@@ -212,22 +205,6 @@ public class MarketDataSnapshotFullRefresh : Message
     public MaturityDate Get(MaturityDate val) { GetField(val); return val; }
     public bool IsSet(MaturityDate val) { return IsSetMaturityDate(); }
     public bool IsSetMaturityDate() { return IsSetField(Tags.MaturityDate); }
-
-    public PutOrCall PutOrCall
-    {
-        get
-        {
-            PutOrCall val = new();
-            GetField(val);
-            return val;
-        }
-        set  => SetField(value);
-    }
-
-    public void Set(PutOrCall val) { PutOrCall = val; }
-    public PutOrCall Get(PutOrCall val) { GetField(val); return val; }
-    public bool IsSet(PutOrCall val) { return IsSetPutOrCall(); }
-    public bool IsSetPutOrCall() { return IsSetField(Tags.PutOrCall); }
 
     public CouponPaymentDate CouponPaymentDate
     {
@@ -853,6 +830,70 @@ public class MarketDataSnapshotFullRefresh : Message
     public bool IsSet(ApplQueueResolution val) { return IsSetApplQueueResolution(); }
     public bool IsSetApplQueueResolution() { return IsSetField(Tags.ApplQueueResolution); }
 
+    public QuoteID QuoteID
+    {
+        get
+        {
+            QuoteID val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(QuoteID val) { QuoteID = val; }
+    public QuoteID Get(QuoteID val) { GetField(val); return val; }
+    public bool IsSet(QuoteID val) { return IsSetQuoteID(); }
+    public bool IsSetQuoteID() { return IsSetField(Tags.QuoteID); }
+
+    public SettlDate SettlDate
+    {
+        get
+        {
+            SettlDate val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(SettlDate val) { SettlDate = val; }
+    public SettlDate Get(SettlDate val) { GetField(val); return val; }
+    public bool IsSet(SettlDate val) { return IsSetSettlDate(); }
+    public bool IsSetSettlDate() { return IsSetField(Tags.SettlDate); }
+
+    public SettlType SettlType
+    {
+        get
+        {
+            SettlType val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(SettlType val) { SettlType = val; }
+    public SettlType Get(SettlType val) { GetField(val); return val; }
+    public bool IsSet(SettlType val) { return IsSetSettlType(); }
+    public bool IsSetSettlType() { return IsSetField(Tags.SettlType); }
+
+    public CustomField CustomField
+    {
+        get
+        {
+            CustomField val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(CustomField val) { CustomField = val; }
+    public CustomField Get(CustomField val) { GetField(val); return val; }
+    public bool IsSet(CustomField val) { return IsSetCustomField(); }
+    public bool IsSetCustomField() { return IsSetField(Tags.CustomField); }
+
     public class NoSecurityAltIDGroup : Group
     {
         public static int[] DefaultFieldOrder = [Tags.SecurityAltID, Tags.SecurityAltIDSource, 0];
@@ -991,10 +1032,10 @@ public class MarketDataSnapshotFullRefresh : Message
 
     public class NoUnderlyingsGroup : Group
     {
-        public static int[] DefaultFieldOrder = [Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingPutOrCall, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0];
+        public static int[] DefaultFieldOrder = [Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0];
 
         [Obsolete("Use DefaultFieldOrder instead.  This will be removed in a future release.")]
-        public static int[] fieldOrder = {Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingPutOrCall, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0};
+        public static int[] fieldOrder = {Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0};
 
         public NoUnderlyingsGroup()
           : base(Tags.NoUnderlyings, Tags.UnderlyingSymbol, DefaultFieldOrder)
@@ -1183,22 +1224,6 @@ public class MarketDataSnapshotFullRefresh : Message
         public UnderlyingMaturityDate Get(UnderlyingMaturityDate val) { GetField(val); return val; }
         public bool IsSet(UnderlyingMaturityDate val) { return IsSetUnderlyingMaturityDate(); }
         public bool IsSetUnderlyingMaturityDate() { return IsSetField(Tags.UnderlyingMaturityDate); }
-
-        public UnderlyingPutOrCall UnderlyingPutOrCall
-        {
-            get
-            {
-                UnderlyingPutOrCall val = new();
-                GetField(val);
-                return val;
-            }
-            set  => SetField(value);
-        }
-
-        public void Set(UnderlyingPutOrCall val) { UnderlyingPutOrCall = val; }
-        public UnderlyingPutOrCall Get(UnderlyingPutOrCall val) { GetField(val); return val; }
-        public bool IsSet(UnderlyingPutOrCall val) { return IsSetUnderlyingPutOrCall(); }
-        public bool IsSetUnderlyingPutOrCall() { return IsSetField(Tags.UnderlyingPutOrCall); }
 
         public UnderlyingCouponPaymentDate UnderlyingCouponPaymentDate
         {
@@ -2611,10 +2636,10 @@ public class MarketDataSnapshotFullRefresh : Message
 
     public class NoMDEntriesGroup : Group
     {
-        public static int[] DefaultFieldOrder = [Tags.MDEntryType, Tags.MDEntryPx, Tags.Currency, Tags.MDEntrySize, Tags.MDEntryDate, Tags.MDEntryTime, Tags.TickDirection, Tags.MDMkt, Tags.TradingSessionID, Tags.TradingSessionSubID, Tags.QuoteCondition, Tags.TradeCondition, Tags.MDEntryOriginator, Tags.LocationID, Tags.DeskID, Tags.OpenCloseSettlFlag, Tags.TimeInForce, Tags.ExpireDate, Tags.ExpireTime, Tags.MinQty, Tags.ExecInst, Tags.SellerDays, Tags.OrderID, Tags.QuoteEntryID, Tags.MDEntryBuyer, Tags.MDEntrySeller, Tags.NumberOfOrders, Tags.MDEntryPositionNo, Tags.Scope, Tags.PriceDelta, Tags.Text, Tags.EncodedTextLen, Tags.EncodedText, 0];
+        public static int[] DefaultFieldOrder = [Tags.MDEntryType, Tags.MDEntryPx, Tags.Currency, Tags.MDEntrySize, Tags.MDEntryDate, Tags.MDEntryTime, Tags.TickDirection, Tags.MDMkt, Tags.TradingSessionID, Tags.TradingSessionSubID, Tags.QuoteCondition, Tags.SettlDate, Tags.MDEntryID, Tags.TradeCondition, Tags.MDEntryOriginator, Tags.LocationID, Tags.DeskID, Tags.OpenCloseSettlFlag, Tags.TimeInForce, Tags.ExpireDate, Tags.ExpireTime, Tags.MinQty, Tags.ExecInst, Tags.SellerDays, Tags.OrderID, Tags.QuoteEntryID, Tags.MDEntryBuyer, Tags.MDEntrySeller, Tags.NumberOfOrders, Tags.MDEntryPositionNo, Tags.Scope, Tags.PriceDelta, Tags.Text, Tags.EncodedTextLen, Tags.EncodedText, Tags.NoTrdRegTimestamps, Tags.MinOrderSize, Tags.MaxOrderSize, 0];
 
         [Obsolete("Use DefaultFieldOrder instead.  This will be removed in a future release.")]
-        public static int[] fieldOrder = {Tags.MDEntryType, Tags.MDEntryPx, Tags.Currency, Tags.MDEntrySize, Tags.MDEntryDate, Tags.MDEntryTime, Tags.TickDirection, Tags.MDMkt, Tags.TradingSessionID, Tags.TradingSessionSubID, Tags.QuoteCondition, Tags.TradeCondition, Tags.MDEntryOriginator, Tags.LocationID, Tags.DeskID, Tags.OpenCloseSettlFlag, Tags.TimeInForce, Tags.ExpireDate, Tags.ExpireTime, Tags.MinQty, Tags.ExecInst, Tags.SellerDays, Tags.OrderID, Tags.QuoteEntryID, Tags.MDEntryBuyer, Tags.MDEntrySeller, Tags.NumberOfOrders, Tags.MDEntryPositionNo, Tags.Scope, Tags.PriceDelta, Tags.Text, Tags.EncodedTextLen, Tags.EncodedText, 0};
+        public static int[] fieldOrder = {Tags.MDEntryType, Tags.MDEntryPx, Tags.Currency, Tags.MDEntrySize, Tags.MDEntryDate, Tags.MDEntryTime, Tags.TickDirection, Tags.MDMkt, Tags.TradingSessionID, Tags.TradingSessionSubID, Tags.QuoteCondition, Tags.SettlDate, Tags.MDEntryID, Tags.TradeCondition, Tags.MDEntryOriginator, Tags.LocationID, Tags.DeskID, Tags.OpenCloseSettlFlag, Tags.TimeInForce, Tags.ExpireDate, Tags.ExpireTime, Tags.MinQty, Tags.ExecInst, Tags.SellerDays, Tags.OrderID, Tags.QuoteEntryID, Tags.MDEntryBuyer, Tags.MDEntrySeller, Tags.NumberOfOrders, Tags.MDEntryPositionNo, Tags.Scope, Tags.PriceDelta, Tags.Text, Tags.EncodedTextLen, Tags.EncodedText, Tags.NoTrdRegTimestamps, Tags.MinOrderSize, Tags.MaxOrderSize, 0};
 
         public NoMDEntriesGroup()
           : base(Tags.NoMDEntries, Tags.MDEntryType, DefaultFieldOrder)
@@ -2803,6 +2828,38 @@ public class MarketDataSnapshotFullRefresh : Message
         public QuoteCondition Get(QuoteCondition val) { GetField(val); return val; }
         public bool IsSet(QuoteCondition val) { return IsSetQuoteCondition(); }
         public bool IsSetQuoteCondition() { return IsSetField(Tags.QuoteCondition); }
+
+        public SettlDate SettlDate
+        {
+            get
+            {
+                SettlDate val = new();
+                GetField(val);
+                return val;
+            }
+            set  => SetField(value);
+        }
+
+        public void Set(SettlDate val) { SettlDate = val; }
+        public SettlDate Get(SettlDate val) { GetField(val); return val; }
+        public bool IsSet(SettlDate val) { return IsSetSettlDate(); }
+        public bool IsSetSettlDate() { return IsSetField(Tags.SettlDate); }
+
+        public MDEntryID MDEntryID
+        {
+            get
+            {
+                MDEntryID val = new();
+                GetField(val);
+                return val;
+            }
+            set  => SetField(value);
+        }
+
+        public void Set(MDEntryID val) { MDEntryID = val; }
+        public MDEntryID Get(MDEntryID val) { GetField(val); return val; }
+        public bool IsSet(MDEntryID val) { return IsSetMDEntryID(); }
+        public bool IsSetMDEntryID() { return IsSetField(Tags.MDEntryID); }
 
         public TradeCondition TradeCondition
         {
@@ -3155,5 +3212,121 @@ public class MarketDataSnapshotFullRefresh : Message
         public EncodedText Get(EncodedText val) { GetField(val); return val; }
         public bool IsSet(EncodedText val) { return IsSetEncodedText(); }
         public bool IsSetEncodedText() { return IsSetField(Tags.EncodedText); }
+
+        public NoTrdRegTimestamps NoTrdRegTimestamps
+        {
+            get
+            {
+                NoTrdRegTimestamps val = new();
+                GetField(val);
+                return val;
+            }
+            set  => SetField(value);
+        }
+
+        public void Set(NoTrdRegTimestamps val) { NoTrdRegTimestamps = val; }
+        public NoTrdRegTimestamps Get(NoTrdRegTimestamps val) { GetField(val); return val; }
+        public bool IsSet(NoTrdRegTimestamps val) { return IsSetNoTrdRegTimestamps(); }
+        public bool IsSetNoTrdRegTimestamps() { return IsSetField(Tags.NoTrdRegTimestamps); }
+
+        public MinOrderSize MinOrderSize
+        {
+            get
+            {
+                MinOrderSize val = new();
+                GetField(val);
+                return val;
+            }
+            set  => SetField(value);
+        }
+
+        public void Set(MinOrderSize val) { MinOrderSize = val; }
+        public MinOrderSize Get(MinOrderSize val) { GetField(val); return val; }
+        public bool IsSet(MinOrderSize val) { return IsSetMinOrderSize(); }
+        public bool IsSetMinOrderSize() { return IsSetField(Tags.MinOrderSize); }
+
+        public MaxOrderSize MaxOrderSize
+        {
+            get
+            {
+                MaxOrderSize val = new();
+                GetField(val);
+                return val;
+            }
+            set  => SetField(value);
+        }
+
+        public void Set(MaxOrderSize val) { MaxOrderSize = val; }
+        public MaxOrderSize Get(MaxOrderSize val) { GetField(val); return val; }
+        public bool IsSet(MaxOrderSize val) { return IsSetMaxOrderSize(); }
+        public bool IsSetMaxOrderSize() { return IsSetField(Tags.MaxOrderSize); }
+
+        public class NoTrdRegTimestampsGroup : Group
+        {
+            public static int[] DefaultFieldOrder = [Tags.TrdRegTimestamp, Tags.TrdRegTimestampType, Tags.TrdRegTimestampOrigin, 0];
+
+            [Obsolete("Use DefaultFieldOrder instead.  This will be removed in a future release.")]
+            public static int[] fieldOrder = {Tags.TrdRegTimestamp, Tags.TrdRegTimestampType, Tags.TrdRegTimestampOrigin, 0};
+
+            public NoTrdRegTimestampsGroup()
+              : base(Tags.NoTrdRegTimestamps, Tags.TrdRegTimestamp, DefaultFieldOrder)
+            {
+            }
+
+            public override Group Clone()
+            {
+                var clone = new NoTrdRegTimestampsGroup();
+                clone.CopyStateFrom(this);
+                return clone;
+            }
+
+            public TrdRegTimestamp TrdRegTimestamp
+            {
+                get
+                {
+                    TrdRegTimestamp val = new();
+                    GetField(val);
+                    return val;
+                }
+                set  => SetField(value);
+            }
+
+            public void Set(TrdRegTimestamp val) { TrdRegTimestamp = val; }
+            public TrdRegTimestamp Get(TrdRegTimestamp val) { GetField(val); return val; }
+            public bool IsSet(TrdRegTimestamp val) { return IsSetTrdRegTimestamp(); }
+            public bool IsSetTrdRegTimestamp() { return IsSetField(Tags.TrdRegTimestamp); }
+
+            public TrdRegTimestampType TrdRegTimestampType
+            {
+                get
+                {
+                    TrdRegTimestampType val = new();
+                    GetField(val);
+                    return val;
+                }
+                set  => SetField(value);
+            }
+
+            public void Set(TrdRegTimestampType val) { TrdRegTimestampType = val; }
+            public TrdRegTimestampType Get(TrdRegTimestampType val) { GetField(val); return val; }
+            public bool IsSet(TrdRegTimestampType val) { return IsSetTrdRegTimestampType(); }
+            public bool IsSetTrdRegTimestampType() { return IsSetField(Tags.TrdRegTimestampType); }
+
+            public TrdRegTimestampOrigin TrdRegTimestampOrigin
+            {
+                get
+                {
+                    TrdRegTimestampOrigin val = new();
+                    GetField(val);
+                    return val;
+                }
+                set  => SetField(value);
+            }
+
+            public void Set(TrdRegTimestampOrigin val) { TrdRegTimestampOrigin = val; }
+            public TrdRegTimestampOrigin Get(TrdRegTimestampOrigin val) { GetField(val); return val; }
+            public bool IsSet(TrdRegTimestampOrigin val) { return IsSetTrdRegTimestampOrigin(); }
+            public bool IsSetTrdRegTimestampOrigin() { return IsSetField(Tags.TrdRegTimestampOrigin); }
+        }
     }
 }

@@ -311,22 +311,6 @@ public class OrderMassStatusRequest : Message
     public bool IsSet(MaturityDate val) { return IsSetMaturityDate(); }
     public bool IsSetMaturityDate() { return IsSetField(Tags.MaturityDate); }
 
-    public PutOrCall PutOrCall
-    {
-        get
-        {
-            PutOrCall val = new();
-            GetField(val);
-            return val;
-        }
-        set  => SetField(value);
-    }
-
-    public void Set(PutOrCall val) { PutOrCall = val; }
-    public PutOrCall Get(PutOrCall val) { GetField(val); return val; }
-    public bool IsSet(PutOrCall val) { return IsSetPutOrCall(); }
-    public bool IsSetPutOrCall() { return IsSetField(Tags.PutOrCall); }
-
     public CouponPaymentDate CouponPaymentDate
     {
         get
@@ -998,22 +982,6 @@ public class OrderMassStatusRequest : Message
     public UnderlyingMaturityDate Get(UnderlyingMaturityDate val) { GetField(val); return val; }
     public bool IsSet(UnderlyingMaturityDate val) { return IsSetUnderlyingMaturityDate(); }
     public bool IsSetUnderlyingMaturityDate() { return IsSetField(Tags.UnderlyingMaturityDate); }
-
-    public UnderlyingPutOrCall UnderlyingPutOrCall
-    {
-        get
-        {
-            UnderlyingPutOrCall val = new();
-            GetField(val);
-            return val;
-        }
-        set  => SetField(value);
-    }
-
-    public void Set(UnderlyingPutOrCall val) { UnderlyingPutOrCall = val; }
-    public UnderlyingPutOrCall Get(UnderlyingPutOrCall val) { GetField(val); return val; }
-    public bool IsSet(UnderlyingPutOrCall val) { return IsSetUnderlyingPutOrCall(); }
-    public bool IsSetUnderlyingPutOrCall() { return IsSetField(Tags.UnderlyingPutOrCall); }
 
     public UnderlyingCouponPaymentDate UnderlyingCouponPaymentDate
     {

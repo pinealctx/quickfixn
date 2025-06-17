@@ -16,14 +16,12 @@ public class NewOrderSingle : Message
 
     public NewOrderSingle(
             ClOrdID aClOrdID,
-            Symbol aSymbol,
             Side aSide,
             TransactTime aTransactTime,
             OrdType aOrdType
         ) : this()
     {
         ClOrdID = aClOrdID;
-        Symbol = aSymbol;
         Side = aSide;
         TransactTime = aTransactTime;
         OrdType = aOrdType;
@@ -604,22 +602,6 @@ public class NewOrderSingle : Message
     public MaturityDate Get(MaturityDate val) { GetField(val); return val; }
     public bool IsSet(MaturityDate val) { return IsSetMaturityDate(); }
     public bool IsSetMaturityDate() { return IsSetField(Tags.MaturityDate); }
-
-    public PutOrCall PutOrCall
-    {
-        get
-        {
-            PutOrCall val = new();
-            GetField(val);
-            return val;
-        }
-        set  => SetField(value);
-    }
-
-    public void Set(PutOrCall val) { PutOrCall = val; }
-    public PutOrCall Get(PutOrCall val) { GetField(val); return val; }
-    public bool IsSet(PutOrCall val) { return IsSetPutOrCall(); }
-    public bool IsSetPutOrCall() { return IsSetField(Tags.PutOrCall); }
 
     public CouponPaymentDate CouponPaymentDate
     {
@@ -2525,6 +2507,118 @@ public class NewOrderSingle : Message
     public bool IsSet(Designation val) { return IsSetDesignation(); }
     public bool IsSetDesignation() { return IsSetField(Tags.Designation); }
 
+    public TradeLinkID TradeLinkID
+    {
+        get
+        {
+            TradeLinkID val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(TradeLinkID val) { TradeLinkID = val; }
+    public TradeLinkID Get(TradeLinkID val) { GetField(val); return val; }
+    public bool IsSet(TradeLinkID val) { return IsSetTradeLinkID(); }
+    public bool IsSetTradeLinkID() { return IsSetField(Tags.TradeLinkID); }
+
+    public OnBehalfOfCompID OnBehalfOfCompID
+    {
+        get
+        {
+            OnBehalfOfCompID val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(OnBehalfOfCompID val) { OnBehalfOfCompID = val; }
+    public OnBehalfOfCompID Get(OnBehalfOfCompID val) { GetField(val); return val; }
+    public bool IsSet(OnBehalfOfCompID val) { return IsSetOnBehalfOfCompID(); }
+    public bool IsSetOnBehalfOfCompID() { return IsSetField(Tags.OnBehalfOfCompID); }
+
+    public OnBehalfOfSubID OnBehalfOfSubID
+    {
+        get
+        {
+            OnBehalfOfSubID val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(OnBehalfOfSubID val) { OnBehalfOfSubID = val; }
+    public OnBehalfOfSubID Get(OnBehalfOfSubID val) { GetField(val); return val; }
+    public bool IsSet(OnBehalfOfSubID val) { return IsSetOnBehalfOfSubID(); }
+    public bool IsSetOnBehalfOfSubID() { return IsSetField(Tags.OnBehalfOfSubID); }
+
+    public SecondaryExecID SecondaryExecID
+    {
+        get
+        {
+            SecondaryExecID val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(SecondaryExecID val) { SecondaryExecID = val; }
+    public SecondaryExecID Get(SecondaryExecID val) { GetField(val); return val; }
+    public bool IsSet(SecondaryExecID val) { return IsSetSecondaryExecID(); }
+    public bool IsSetSecondaryExecID() { return IsSetField(Tags.SecondaryExecID); }
+
+    public ttl ttl
+    {
+        get
+        {
+            ttl val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(ttl val) { ttl = val; }
+    public ttl Get(ttl val) { GetField(val); return val; }
+    public bool IsSet(ttl val) { return IsSetttl(); }
+    public bool IsSetttl() { return IsSetField(Tags.ttl); }
+
+    public deviation deviation
+    {
+        get
+        {
+            deviation val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(deviation val) { deviation = val; }
+    public deviation Get(deviation val) { GetField(val); return val; }
+    public bool IsSet(deviation val) { return IsSetdeviation(); }
+    public bool IsSetdeviation() { return IsSetField(Tags.deviation); }
+
+    public InitialAccount InitialAccount
+    {
+        get
+        {
+            InitialAccount val = new();
+            GetField(val);
+            return val;
+        }
+        set  => SetField(value);
+    }
+
+    public void Set(InitialAccount val) { InitialAccount = val; }
+    public InitialAccount Get(InitialAccount val) { GetField(val); return val; }
+    public bool IsSet(InitialAccount val) { return IsSetInitialAccount(); }
+    public bool IsSetInitialAccount() { return IsSetField(Tags.InitialAccount); }
+
     public class NoPartyIDsGroup : Group
     {
         public static int[] DefaultFieldOrder = [Tags.PartyID, Tags.PartyIDSource, Tags.PartyRole, Tags.NoPartySubIDs, 0];
@@ -3103,10 +3197,10 @@ public class NewOrderSingle : Message
 
     public class NoUnderlyingsGroup : Group
     {
-        public static int[] DefaultFieldOrder = [Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingPutOrCall, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0];
+        public static int[] DefaultFieldOrder = [Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0];
 
         [Obsolete("Use DefaultFieldOrder instead.  This will be removed in a future release.")]
-        public static int[] fieldOrder = {Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingPutOrCall, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0};
+        public static int[] fieldOrder = {Tags.UnderlyingSymbol, Tags.UnderlyingSymbolSfx, Tags.UnderlyingSecurityID, Tags.UnderlyingSecurityIDSource, Tags.NoUnderlyingSecurityAltID, Tags.UnderlyingProduct, Tags.UnderlyingCFICode, Tags.UnderlyingSecurityType, Tags.UnderlyingSecuritySubType, Tags.UnderlyingMaturityMonthYear, Tags.UnderlyingMaturityDate, Tags.UnderlyingCouponPaymentDate, Tags.UnderlyingIssueDate, Tags.UnderlyingRepoCollateralSecurityType, Tags.UnderlyingRepurchaseTerm, Tags.UnderlyingRepurchaseRate, Tags.UnderlyingFactor, Tags.UnderlyingCreditRating, Tags.UnderlyingInstrRegistry, Tags.UnderlyingCountryOfIssue, Tags.UnderlyingStateOrProvinceOfIssue, Tags.UnderlyingLocaleOfIssue, Tags.UnderlyingRedemptionDate, Tags.UnderlyingStrikePrice, Tags.UnderlyingStrikeCurrency, Tags.UnderlyingOptAttribute, Tags.UnderlyingContractMultiplier, Tags.UnderlyingCouponRate, Tags.UnderlyingSecurityExchange, Tags.UnderlyingIssuer, Tags.EncodedUnderlyingIssuerLen, Tags.EncodedUnderlyingIssuer, Tags.UnderlyingSecurityDesc, Tags.EncodedUnderlyingSecurityDescLen, Tags.EncodedUnderlyingSecurityDesc, Tags.UnderlyingCPProgram, Tags.UnderlyingCPRegType, Tags.UnderlyingCurrency, Tags.UnderlyingQty, Tags.UnderlyingPx, Tags.UnderlyingDirtyPrice, Tags.UnderlyingEndPrice, Tags.UnderlyingStartValue, Tags.UnderlyingCurrentValue, Tags.UnderlyingEndValue, Tags.NoUnderlyingStips, 0};
 
         public NoUnderlyingsGroup()
           : base(Tags.NoUnderlyings, Tags.UnderlyingSymbol, DefaultFieldOrder)
@@ -3295,22 +3389,6 @@ public class NewOrderSingle : Message
         public UnderlyingMaturityDate Get(UnderlyingMaturityDate val) { GetField(val); return val; }
         public bool IsSet(UnderlyingMaturityDate val) { return IsSetUnderlyingMaturityDate(); }
         public bool IsSetUnderlyingMaturityDate() { return IsSetField(Tags.UnderlyingMaturityDate); }
-
-        public UnderlyingPutOrCall UnderlyingPutOrCall
-        {
-            get
-            {
-                UnderlyingPutOrCall val = new();
-                GetField(val);
-                return val;
-            }
-            set  => SetField(value);
-        }
-
-        public void Set(UnderlyingPutOrCall val) { UnderlyingPutOrCall = val; }
-        public UnderlyingPutOrCall Get(UnderlyingPutOrCall val) { GetField(val); return val; }
-        public bool IsSet(UnderlyingPutOrCall val) { return IsSetUnderlyingPutOrCall(); }
-        public bool IsSetUnderlyingPutOrCall() { return IsSetField(Tags.UnderlyingPutOrCall); }
 
         public UnderlyingCouponPaymentDate UnderlyingCouponPaymentDate
         {
