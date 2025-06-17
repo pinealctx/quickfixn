@@ -494,7 +494,6 @@
 
             <field name='OnBehalfOfCompID' required='N'/>
             <field name='OnBehalfOfSubID' required='N'/>
-            <field name='SecondaryClOrdID' required='N'/>
             <field name='SecondaryExecID' required='N'/>
             <field name='ttl' required='N'/>
             <field name='deviation' required='N'/>
@@ -6830,7 +6829,7 @@
         <!--VELOCITY Direct Connection ExecutionReport Custom Field-->
         <field number='9364' name='PlacedTime' type='LOCALMKTDATE'/>
         <field number='9374' name='LiquidityAction' type='INT'>
-            <value enum='0' description='UNDISCLOSED/UNKNOWN'/>
+            <value enum='0' description='UNDISCLOSED_UNKNOWN'/>
             <value enum='1' description='ADDED_FIRM_LIQUIDITY'/>
             <value enum='2' description='REMOVED_FIRM_LIQUIDITY'/>
             <value enum='3' description='ADDED_LAST_LOOK_LIQUIDITY'/>
