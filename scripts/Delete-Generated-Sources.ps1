@@ -3,20 +3,22 @@ if ($args.Length -gt 0) {
     Exit 1
 }
 
+# Get root path
 $rootpath = Join-Path $PSScriptRoot '..' | Resolve-Path
 
 $isErr = $false
 
+# Correctly build field file paths
+$fieldsDir = Join-Path -Path $rootpath -ChildPath "QuickFIXn\Fields"
 $fieldFiles = @(
-    Join-Path $rootpath QuickFIXn Fields Fields.cs
-    Join-Path $rootpath QuickFIXn Fields FieldTags.cs
+    (Join-Path -Path $fieldsDir -ChildPath "Fields.cs")
+    (Join-Path -Path $fieldsDir -ChildPath "FieldTags.cs")
 )
 
-$messagePath = Join-Path $rootpath Messages FIX* *cs
-$messageFiles = $messagePath | Resolve-Path
-
-
-
+# Correctly build message file paths
+$messagesDir = Join-Path -Path $rootpath -ChildPath "QuickFIXn\Messages"
+# Use Get-ChildItem instead of wildcard paths
+$messageFiles = Get-ChildItem -Path $messagesDir -Filter "FIX*.cs" -ErrorAction SilentlyContinue
 
 Write-Host '--Deleting generated code--' -ForegroundColor Cyan
 Write-Host 'Field definition files:' -ForegroundColor Cyan
@@ -33,12 +35,16 @@ foreach ($file in $fieldFiles) {
 
 Write-Host 'Message definition files:' -ForegroundColor Cyan
 
-if ($messageFiles.Count -eq 0) {
-    Write-Host "  WARNING: '$messagePath' has no matches." -ForegroundColor Red
+if ($null -eq $messageFiles -or $messageFiles.Count -eq 0) {
+    Write-Host "  WARNING: No FIX*.cs files found in $messagesDir." -ForegroundColor Red
     $isErr = $true
 } else {
-    Remove-Item $messageFiles
-    Write-Host "* All '$messagePath' files are deleted." -ForegroundColor Cyan
+    # Delete each found file
+    foreach ($file in $messageFiles) {
+        Write-Host "* Deleting: $($file.FullName)" -ForegroundColor Cyan
+        Remove-Item -Path $file.FullName -Force
+    }
+    Write-Host "* All FIX*.cs files are deleted." -ForegroundColor Cyan
 }
 
 if ($isErr) {
