@@ -5,7 +5,7 @@ using QuickFix.FIX44;
 
 namespace QuickFixSrv
 {
-    public class MarketDataAcceptorApp : AuthAcceptorApp
+    public class MarketDataAcceptorApp : AuthAcceptorApp, IDisposable
     {
         // Symbol data management
         private Dictionary<string, decimal> _symbolPrices = new();

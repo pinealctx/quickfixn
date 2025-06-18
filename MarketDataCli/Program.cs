@@ -18,12 +18,14 @@ namespace SimpleAuthCli
             Console.WriteLine("FIX Market Data Client");
             Console.WriteLine("=============");
 
-            if (args.Length < 3 || args.Length > 4)
+            if (args.Length < 3 || args.Length > 5)
             {
-                Console.WriteLine("Usage: SimpleAuthCli CONFIG_FILENAME USERNAME PASSWORD [SYMBOLS]");
+                Console.WriteLine("Usage: SimpleAuthCli CONFIG_FILENAME USERNAME PASSWORD [SYMBOLS] [INCREMENTAL]");
                 Console.WriteLine("Examples:");
                 Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456");
                 Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456 \"EURUSD,GBPUSD,USDJPY\"");
+                Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456 \"EURUSD,GBPUSD\" true");
+                Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456 \"\" true");
                 Environment.Exit(2);
             }
 
@@ -33,23 +35,48 @@ namespace SimpleAuthCli
 
             // Parse symbols if provided
             List<string> desiredSymbols = null!;
-            if (args.Length == 4 && !string.IsNullOrWhiteSpace(args[3]))
+            bool hasSymbols = false;
+            if (args.Length >= 4 && !string.IsNullOrWhiteSpace(args[3]))
             {
                 desiredSymbols = new List<string>(args[3].Split(','));
                 Console.WriteLine($"Custom symbol list provided: {string.Join(", ", desiredSymbols)}");
+                hasSymbols = true;
+            }
+
+            // Parse incremental updates flag (default to false)
+            bool useIncrementalUpdates = false;
+            if (args.Length == 5 || (args.Length == 4 && !hasSymbols))
+            {
+                string incrementalArg = args.Length == 5 ? args[4] : args[3];
+                if (bool.TryParse(incrementalArg, out bool incremental))
+                {
+                    useIncrementalUpdates = incremental;
+                }
             }
 
             Console.WriteLine($"Username: {username}");
             Console.WriteLine("Password has been set, but will not be displayed for security reasons.");
+            Console.WriteLine($"Using incremental updates: {useIncrementalUpdates}");
+
             try
             {
                 SessionSettings settings = new SessionSettings(configFile);
-
-                // Use MarketDataClientApp instead of AuthClientApp
-                MarketDataClientApp application = new MarketDataClientApp(username, password, desiredSymbols);
-
                 IMessageStoreFactory storeFactory = new FileStoreFactory(settings);
                 ILogFactory logFactory = new ScreenLogFactory(settings);
+
+                // Choose the appropriate application type
+                AuthClientApp application;
+                if (useIncrementalUpdates)
+                {
+                    application = new IncrementalMarketDataClientApp(username, password, desiredSymbols);
+                    Console.WriteLine("Using incremental market data client");
+                }
+                else
+                {
+                    application = new MarketDataClientApp(username, password, desiredSymbols);
+                    Console.WriteLine("Using standard market data client");
+                }
+
                 QuickFix.Transport.SocketInitiator initiator =
                     new QuickFix.Transport.SocketInitiator(application, storeFactory, settings, logFactory);
 
