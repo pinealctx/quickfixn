@@ -18,6 +18,7 @@ namespace QuickFixSrv
         private const int ASK_LEVELS = 3;
         private const decimal SPREAD_PERCENTAGE = 0.0002m; // 0.02% spread
         private const decimal LEVEL_STEP_PERCENTAGE = 0.0001m; // 0.01% between levels
+        private const double RANDOM_PRICE_CHANGE_PERCENTAGE = 0.02; // ±2% random price change
 
         public MarketDataAcceptorApp(string username, string password, string symbolsWithPrices)
             : base(username, password)
@@ -70,8 +71,9 @@ namespace QuickFixSrv
             {
                 decimal currentPrice = _symbolPrices[symbol];
 
-                // Generate random price change within ±0.7%
-                decimal changePercentage = (decimal)(_random.NextDouble() * 0.014 - 0.007);
+                // Generate random price change within ±RANDOM_PRICE_CHANGE_PERCENTAGE
+                // Random between -2% and +2%
+                decimal changePercentage = (decimal)(_random.NextDouble() * 2 - 1) * (decimal)RANDOM_PRICE_CHANGE_PERCENTAGE; 
                 decimal newPrice = currentPrice * (1 + changePercentage);
 
                 // Round to 5 decimal places which is standard for FX

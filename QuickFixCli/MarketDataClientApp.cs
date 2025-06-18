@@ -9,7 +9,7 @@ namespace QuickFixCli
     {
         // Market data tracking
         private SessionID? _sessionId;
-        private Dictionary<string, Dictionary<string, List<Tuple<double, double>>>> _prices = new();
+        protected Dictionary<string, Dictionary<string, List<Tuple<double, double>>>> _prices = new();
         private List<string> _availableSymbols = new List<string>();
         private List<string> _desiredSymbols;
         private List<string> _subscribedSymbols = new List<string>();
@@ -239,7 +239,7 @@ namespace QuickFixCli
             }
         }
 
-        private void SendMarketDataRequest(List<string> symbols)
+        protected virtual void SendMarketDataRequest(List<string> symbols)
         {
             if (symbols == null || !symbols.Any())
             {
