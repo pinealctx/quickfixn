@@ -48,6 +48,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickFix.FIXT11", "Messages
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AcceptanceTest", "AcceptanceTest\AcceptanceTest.csproj", "{A6E267D7-CF1E-4C28-BB72-8F004E4375FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleAuthSrv", "SimpleAuthSrv\SimpleAuthSrv.csproj", "{45742ABF-0FA5-4E2D-9650-B654835F0114}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleAuthCli", "SimpleAuthCli\SimpleAuthCli.csproj", "{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -192,6 +196,22 @@ Global
 		{A6E267D7-CF1E-4C28-BB72-8F004E4375FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6E267D7-CF1E-4C28-BB72-8F004E4375FC}.Release|x64.ActiveCfg = Release|Any CPU
 		{A6E267D7-CF1E-4C28-BB72-8F004E4375FC}.Release|x64.Build.0 = Release|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Debug|x64.Build.0 = Debug|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Release|x64.ActiveCfg = Release|Any CPU
+		{45742ABF-0FA5-4E2D-9650-B654835F0114}.Release|x64.Build.0 = Release|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1EF47F4-9DFD-4269-BE8F-F97988BD41FE}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
