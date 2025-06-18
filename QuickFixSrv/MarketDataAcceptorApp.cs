@@ -18,7 +18,9 @@ namespace QuickFixSrv
         private const int ASK_LEVELS = 3;
         private const decimal SPREAD_PERCENTAGE = 0.0002m; // 0.02% spread
         private const decimal LEVEL_STEP_PERCENTAGE = 0.0001m; // 0.01% between levels
-        private const double RANDOM_PRICE_CHANGE_PERCENTAGE = 0.02; // ±2% random price change
+        private const double RANDOM_PRICE_CHANGE_PERCENTAGE = 0.007; // ±0.7% random price change
+        private readonly decimal[] possibleLevelSizes = { 1000000m, 2000000m, 3000000m, 4000000m, 5000000m,
+                                               6000000m, 7000000m, 8000000m, 9000000m, 10000000m };
 
         public MarketDataAcceptorApp(string username, string password, string symbolsWithPrices)
             : base(username, password)
@@ -73,7 +75,7 @@ namespace QuickFixSrv
 
                 // Generate random price change within ±RANDOM_PRICE_CHANGE_PERCENTAGE
                 // Random between -2% and +2%
-                decimal changePercentage = (decimal)(_random.NextDouble() * 2 - 1) * (decimal)RANDOM_PRICE_CHANGE_PERCENTAGE; 
+                decimal changePercentage = (decimal)(_random.NextDouble() * 2 - 1) * (decimal)RANDOM_PRICE_CHANGE_PERCENTAGE;
                 decimal newPrice = currentPrice * (1 + changePercentage);
 
                 // Round to 5 decimal places which is standard for FX
@@ -118,8 +120,8 @@ namespace QuickFixSrv
                 for (int i = 0; i < BID_LEVELS; i++)
                 {
                     decimal levelPrice = bidPrice - (i * midPrice * LEVEL_STEP_PERCENTAGE);
-                    decimal levelSize = 1000000m * (BID_LEVELS - i); // Size decreases at deeper levels
-
+                    //decimal levelSize = 1000000m * (BID_LEVELS - i); // Size decreases at deeper levels
+                    decimal levelSize = possibleLevelSizes[_random.Next(possibleLevelSizes.Length)];
                     MarketDataSnapshotFullRefresh.NoMDEntriesGroup bidGroup = new MarketDataSnapshotFullRefresh.NoMDEntriesGroup();
                     bidGroup.MDEntryType = new MDEntryType(MDEntryType.BID);
                     bidGroup.MDEntryPx = new MDEntryPx(levelPrice);
@@ -131,7 +133,8 @@ namespace QuickFixSrv
                 for (int i = 0; i < ASK_LEVELS; i++)
                 {
                     decimal levelPrice = askPrice + (i * midPrice * LEVEL_STEP_PERCENTAGE);
-                    decimal levelSize = 1000000m * (ASK_LEVELS - i); // Size decreases at deeper levels
+                    //decimal levelSize = 1000000m * (ASK_LEVELS - i); // Size decreases at deeper levels
+                    decimal levelSize = possibleLevelSizes[_random.Next(possibleLevelSizes.Length)];
 
                     MarketDataSnapshotFullRefresh.NoMDEntriesGroup askGroup = new MarketDataSnapshotFullRefresh.NoMDEntriesGroup();
                     askGroup.MDEntryType = new MDEntryType(MDEntryType.OFFER);
@@ -220,7 +223,7 @@ namespace QuickFixSrv
                     subscriptionType == SubscriptionRequestType.SNAPSHOT)
                 {
                     // Create a new entry for this client if it doesn't exist
-                    if (_clientSubscriptions.TryGetValue(sessionID, out HashSet<string>? subscriptions))
+                    if (!_clientSubscriptions.TryGetValue(sessionID, out HashSet<string>? subscriptions))
                     {
                         subscriptions = new HashSet<string>();
                         _clientSubscriptions[sessionID] = subscriptions;

@@ -12,6 +12,10 @@ namespace QuickFixSrv
         // Track client connection state
         private Dictionary<SessionID, bool> _clientReceivedFullRefresh = new();
 
+        // Track last acknowledgment times for clients
+        private Dictionary<SessionID, DateTime> _lastAcknowledgmentTime = new();
+        private TimeSpan _acknowledmentTimeout = TimeSpan.FromSeconds(10); // Timeout for acknowledgments
+
         // Settings for incremental updates
         private int _updateCounter = 0;
         private int _fullRefreshInterval = 10; // Send full refresh every 10 updates
@@ -68,6 +72,9 @@ namespace QuickFixSrv
         // Add handler for MassQuoteAcknowledgement
         public void OnMessage(MassQuoteAcknowledgement acknowledgement, SessionID sessionID)
         {
+            _lastAcknowledgmentTime[sessionID] = DateTime.UtcNow;
+            // Ensure we use incremental updates for this client
+            _clientReceivedFullRefresh[sessionID] = true;
             Console.WriteLine($"Received MassQuoteAcknowledgement from {sessionID}");
         }
 
@@ -82,9 +89,27 @@ namespace QuickFixSrv
                 _clientReceivedFullRefresh.TryGetValue(sessionID, out bool receivedFullRefresh) &&
                 receivedFullRefresh)
             {
+                // Check if client is acknowledging incremental updates
+                bool clientAcknowledgingUpdates = true;
+                if (_lastAcknowledgmentTime.TryGetValue(sessionID, out DateTime lastAckTime))
+                {
+                    if (DateTime.UtcNow - lastAckTime > _acknowledmentTimeout)
+                    {
+                        // Client hasn't acknowledged recently, fall back to full refreshes
+                        clientAcknowledgingUpdates = false;
+                        Console.WriteLine($"Client {sessionID} not acknowledging MassQuotes, falling back to full refreshes");
+                    }
+                }
+                else if (_updateCounter > 0)  // If we've sent updates but never received an acknowledgment
+                {
+                    // New client with no acknowledgment history
+                    clientAcknowledgingUpdates = false;
+                    Console.WriteLine($"Client {sessionID} has never acknowledged MassQuotes, sending full refresh");
+                }
+
                 // Increment counter and check if we should periodically send full refresh anyway
                 _updateCounter++;
-                if (_updateCounter % _fullRefreshInterval == 0)
+                if (_updateCounter % _fullRefreshInterval == 0 || !clientAcknowledgingUpdates)
                 {
                     // Let the full refresh go through periodically
                     base.ToApp(message, sessionID);

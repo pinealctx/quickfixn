@@ -86,6 +86,16 @@ namespace QuickFixCli
 
                         Console.WriteLine($"Updated incremental market data for {symbol}: {priceBook["bids"].Count} bids, {priceBook["asks"].Count} asks");
                     }
+
+                    // Send acknowledgement for the MassQuote
+                    if (massQuote.IsSetQuoteID())
+                    {
+                        SendMassQuoteAcknowledgement(sessionID, massQuote.QuoteID.Value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("MassQuote does not contain QuoteID, cannot send acknowledgement");
+                    }
                 }
             }
             catch (Exception ex)
