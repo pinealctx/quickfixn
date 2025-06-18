@@ -16,22 +16,22 @@ namespace SimpleAuthSrv
 
         #region IApplication Members
 
-        public void OnCreate(SessionID sessionID)
+        public virtual void OnCreate(SessionID sessionID)
         {
             Console.WriteLine($"Creating session: {sessionID}");
         }
 
-        public void OnLogon(SessionID sessionID)
+        public virtual void OnLogon(SessionID sessionID)
         {
             Console.WriteLine($"User logged in: {sessionID}");
         }
 
-        public void OnLogout(SessionID sessionID)
+        public virtual void OnLogout(SessionID sessionID)
         {
             Console.WriteLine($"User logged out: {sessionID}");
         }
 
-        public void FromAdmin(QuickFix.Message message, SessionID sessionID)
+        public virtual void FromAdmin(QuickFix.Message message, SessionID sessionID)
         {
             Console.WriteLine($"Received admin message: {message} from session: {sessionID}");
 
@@ -46,12 +46,12 @@ namespace SimpleAuthSrv
             }
         }
 
-        public void ToAdmin(QuickFix.Message message, SessionID sessionID)
+        public virtual void ToAdmin(QuickFix.Message message, SessionID sessionID)
         {
             Console.WriteLine($"Sending admin message: {message} to session: {sessionID}");
         }
 
-        public void FromApp(QuickFix.Message message, SessionID sessionID)
+        public virtual void FromApp(QuickFix.Message message, SessionID sessionID)
         {
             Console.WriteLine($"Received application message: {message} from session: {sessionID}");
 
@@ -59,7 +59,7 @@ namespace SimpleAuthSrv
             Crack(message, sessionID);
         }
 
-        public void ToApp(QuickFix.Message message, SessionID sessionID)
+        public virtual void ToApp(QuickFix.Message message, SessionID sessionID)
         {
             Console.WriteLine($"Sending application message: {message} to session: {sessionID}");
         }
@@ -69,7 +69,7 @@ namespace SimpleAuthSrv
         #region Message Handlers
 
         // Handle Logon messages specifically
-        public void OnMessage(Logon logon, SessionID sessionID)
+        public virtual void OnMessage(Logon logon, SessionID sessionID)
         {
             Console.WriteLine($"Received Logon message: {logon} from session: {sessionID}");
 
@@ -95,13 +95,13 @@ namespace SimpleAuthSrv
         }
 
         // Handle Heartbeat messages specifically
-        public void OnMessage(Heartbeat heartbeat, SessionID sessionID)
+        public virtual void OnMessage(Heartbeat heartbeat, SessionID sessionID)
         {
             Console.WriteLine($"Received Heartbeat message: {heartbeat} from session: {sessionID}");
         }
 
         // Handle TestRequest messages specifically
-        public void OnMessage(TestRequest testRequest, SessionID sessionID)
+        public virtual void OnMessage(TestRequest testRequest, SessionID sessionID)
         {
             Console.WriteLine($"Received TestRequest message: {testRequest} from session: {sessionID}");
         }

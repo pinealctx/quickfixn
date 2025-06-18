@@ -8,8 +8,65 @@ namespace SimpleAuthCli
 {
     class Program
     {
-        [STAThread]
         static void Main(string[] args)
+        {
+            MarketMain(args);
+        }
+
+        static void MarketMain(string[] args)
+        {
+            Console.WriteLine("=============");
+            Console.WriteLine("FIX Market Data Client");
+            Console.WriteLine("=============");
+
+            if (args.Length < 3 || args.Length > 4)
+            {
+                Console.WriteLine("Usage: SimpleAuthCli CONFIG_FILENAME USERNAME PASSWORD [SYMBOLS]");
+                Console.WriteLine("Examples:");
+                Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456");
+                Console.WriteLine("  SimpleAuthCli simpleclient.cfg admin 123456 \"EURUSD,GBPUSD,USDJPY\"");
+                Environment.Exit(2);
+            }
+
+            string configFile = args[0];
+            string username = args[1];
+            string password = args[2];
+
+            // Parse symbols if provided
+            List<string> desiredSymbols = null!;
+            if (args.Length == 4 && !string.IsNullOrWhiteSpace(args[3]))
+            {
+                desiredSymbols = new List<string>(args[3].Split(','));
+                Console.WriteLine($"Custom symbol list provided: {string.Join(", ", desiredSymbols)}");
+            }
+
+            Console.WriteLine($"Username: {username}");
+            Console.WriteLine("Password has been set, but will not be displayed for security reasons.");
+            try
+            {
+                SessionSettings settings = new SessionSettings(configFile);
+
+                // Use MarketDataClientApp instead of AuthClientApp
+                MarketDataClientApp application = new MarketDataClientApp(username, password, desiredSymbols);
+
+                IMessageStoreFactory storeFactory = new FileStoreFactory(settings);
+                ILogFactory logFactory = new ScreenLogFactory(settings);
+                QuickFix.Transport.SocketInitiator initiator =
+                    new QuickFix.Transport.SocketInitiator(application, storeFactory, settings, logFactory);
+
+                initiator.Start();
+                Console.WriteLine("Client started and connected to server, press <enter> to quit.");
+                Console.Read();
+                initiator.Stop();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
+        }
+
+        static void LegacyMain(string[] args)
         {
             Console.WriteLine("=============");
             Console.WriteLine("FIX Simple Authentication Client Example");
