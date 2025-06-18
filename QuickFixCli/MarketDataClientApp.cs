@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Timers;
+﻿using System.Timers;
 using QuickFix;
 using QuickFix.Fields;
 using QuickFix.FIX44;
 
-namespace SimpleAuthCli
+namespace QuickFixCli
 {
     public class MarketDataClientApp : AuthClientApp
     {

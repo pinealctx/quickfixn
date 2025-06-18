@@ -1,7 +1,7 @@
 ﻿using QuickFix;
 using QuickFix.FIX44;
 
-namespace SimpleAuthSrv
+namespace QuickFixSrv
 {
     public class AuthAcceptorApp : MessageCracker, IApplication
     {

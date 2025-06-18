@@ -1,8 +1,7 @@
 ﻿using QuickFix;
 using QuickFix.Logger;
 using QuickFix.Store;
-using SimpleAuthCli;
-using System;
+using QuickFixCli;
 
 namespace SimpleAuthCli
 {

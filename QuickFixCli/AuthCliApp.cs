@@ -1,9 +1,8 @@
-﻿using System;
-using QuickFix;
+﻿using QuickFix;
 using QuickFix.Fields;
 using QuickFix.FIX44;
 
-namespace SimpleAuthCli
+namespace QuickFixCli
 {
     public class AuthClientApp : MessageCracker, IApplication
     {
