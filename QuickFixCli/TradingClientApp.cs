@@ -32,7 +32,21 @@ namespace QuickFixCli
         {
             Console.WriteLine($"TradingClient received app message: {message}");
 
-            // Let MessageCracker handle the message
+            string msgType = message.Header.GetString(Tags.MsgType);
+
+            // Handle custom message types directly before cracking
+            if (msgType == MsgType_RequestForPositionsAck)
+            {
+                OnMessage_RequestForPositionsAck(message, sessionID);
+                return;
+            }
+            else if (msgType == MsgType_AccountInfoResponse)
+            {
+                OnMessage_AccountInfoResponse(message, sessionID);
+                return;
+            }
+
+            // Let MessageCracker handle standard message types
             Crack(message, sessionID);
         }
 
@@ -51,28 +65,44 @@ namespace QuickFixCli
             Console.WriteLine($"  Status: {ordStatus}, ExecType: {execType}");
 
             if (execReport.IsSetText())
+            {
                 Console.WriteLine($"  Text: {execReport.Text.Value}");
+            }
 
             if (execReport.IsSetOrderID())
+            {
                 Console.WriteLine($"  OrderID: {execReport.OrderID.Value}");
+            }
 
             if (execReport.IsSetSymbol())
+            {
                 Console.WriteLine($"  Symbol: {execReport.Symbol.Value}");
+            }
 
             if (execReport.IsSetOrderQty())
+            {
                 Console.WriteLine($"  Quantity: {execReport.OrderQty.Value}");
+            }
 
             if (execReport.IsSetPrice())
+            {
                 Console.WriteLine($"  Price: {execReport.Price.Value}");
+            }
 
             if (execReport.IsSetLeavesQty())
+            {
                 Console.WriteLine($"  LeavesQty: {execReport.LeavesQty.Value}");
+            }
 
             if (execReport.IsSetCumQty())
+            {
                 Console.WriteLine($"  CumQty: {execReport.CumQty.Value}");
+            }
 
             if (execReport.IsSetAvgPx())
+            {
                 Console.WriteLine($"  AvgPx: {execReport.AvgPx.Value}");
+            }
 
             // Handle based on mass status if needed
             if (execReport.IsSetMassStatusReqID())
@@ -93,10 +123,14 @@ namespace QuickFixCli
             Console.WriteLine($"  Status: {ordStatus}");
 
             if (cancelReject.IsSetText())
+            {
                 Console.WriteLine($"  Reason: {cancelReject.Text.Value}");
+            }
 
             if (cancelReject.IsSetCxlRejReason())
+            {
                 Console.WriteLine($"  CxlRejReason: {cancelReject.CxlRejReason.Value}");
+            }
         }
 
         // Handle PositionReport messages
@@ -117,52 +151,55 @@ namespace QuickFixCli
                 string posType = posGroup.PosType.Value;
 
                 if (posGroup.IsSetLongQty())
+                {
                     Console.WriteLine($"  Long position: {posGroup.LongQty.Value} {posType}");
+                }
 
                 if (posGroup.IsSetShortQty())
+                {
                     Console.WriteLine($"  Short position: {posGroup.ShortQty.Value} {posType}");
+                }
             }
 
             if (posReport.IsSetSettlPrice())
                 Console.WriteLine($"  Settle Price: {posReport.SettlPrice.Value}");
         }
 
-        // Handle RequestForPositionsAck messages
-        public void OnMessage(QuickFix.Message message, SessionID sessionID)
+        // Handle RequestForPositionsAck messages (custom handler)
+        public void OnMessage_RequestForPositionsAck(QuickFix.Message message, SessionID sessionID)
         {
-            string msgType = message.Header.GetString(Tags.MsgType);
+            string posReqId = message.GetString(Tags.PosReqID);
+            int totalPositions = message.GetInt(Tags.TotalNumPosReports);
 
-            // Handle custom message types that might not have specific classes
-            if (msgType == MsgType_RequestForPositionsAck)
+            Console.WriteLine($"Received RequestForPositionsAck: {posReqId}");
+            Console.WriteLine($"  Total positions: {totalPositions}");
+
+            if (message.IsSetField(Tags.Text))
             {
-                string posReqId = message.GetString(Tags.PosReqID);
-                int totalPositions = message.GetInt(Tags.TotalNumPosReports);
-
-                Console.WriteLine($"Received RequestForPositionsAck: {posReqId}");
-                Console.WriteLine($"  Total positions: {totalPositions}");
-
-                if (message.IsSetField(Tags.Text))
-                    Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
+                Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
             }
-            else if (msgType == MsgType_AccountInfoResponse)
+        }
+
+        // Handle AccountInfoResponse messages (custom handler)
+        public void OnMessage_AccountInfoResponse(QuickFix.Message message, SessionID sessionID)
+        {
+            string account = message.GetString(Tags.Account);
+            Console.WriteLine($"Received AccountInfoResponse for account: {account}");
+
+            // Log any account fields present in the message
+            if (message.IsSetField(1001)) // Example custom field for balance
             {
-                string account = message.GetString(Tags.Account);
-                Console.WriteLine($"Received AccountInfoResponse for account: {account}");
-
-                // Log any account fields present in the message
-                if (message.IsSetField(1001)) // Example custom field for balance
-                    Console.WriteLine($"  Balance: {message.GetDecimal(1001)}");
-
-                if (message.IsSetField(1002)) // Example custom field for margin
-                    Console.WriteLine($"  Margin: {message.GetDecimal(1002)}");
-
-                if (message.IsSetField(Tags.Text))
-                    Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
+                Console.WriteLine($"  Balance: {message.GetDecimal(1001)}");
             }
-            else
+
+            if (message.IsSetField(1002)) // Example custom field for margin
             {
-                // Other message types we're not specifically handling
-                base.FromApp(message, sessionID);
+                Console.WriteLine($"  Margin: {message.GetDecimal(1002)}");
+            }
+
+            if (message.IsSetField(Tags.Text))
+            {
+                Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
             }
         }
 
@@ -174,9 +211,9 @@ namespace QuickFixCli
         public void PlaceOrder(
             string symbol,
             char side,
-            double quantity,
+            decimal quantity,
             char orderType,
-            double? price = null,
+            decimal? price = null,
             char timeInForce = TimeInForce.DAY)
         {
             if (_sessionId == null)
@@ -191,13 +228,12 @@ namespace QuickFixCli
             try
             {
                 // Create the order message
-                NewOrderSingle order = new NewOrderSingle(
-                    new ClOrdID(clOrdId),
-                    new Symbol(symbol),
-                    new Side(side),
-                    new TransactTime(DateTime.UtcNow),
-                    new OrdType(orderType)
-                );
+                NewOrderSingle order = new NewOrderSingle();
+                order.Set(new ClOrdID(clOrdId));
+                order.Set(new Symbol(symbol));
+                order.Set(new Side(side));
+                order.Set(new TransactTime(DateTime.UtcNow));
+                order.Set(new OrdType(orderType));
 
                 order.OrderQty = new OrderQty(quantity);
                 order.TimeInForce = new TimeInForce(timeInForce);
@@ -218,7 +254,7 @@ namespace QuickFixCli
         }
 
         // Cancel an existing order
-        public void CancelOrder(string origClOrdId, string symbol, char side, double quantity)
+        public void CancelOrder(string origClOrdId, string symbol, char side, decimal quantity)
         {
             if (_sessionId == null)
             {
@@ -230,13 +266,12 @@ namespace QuickFixCli
 
             try
             {
-                OrderCancelRequest cancelRequest = new OrderCancelRequest(
-                    new OrigClOrdID(origClOrdId),
-                    new ClOrdID(clOrdId),
-                    new Symbol(symbol),
-                    new Side(side),
-                    new TransactTime(DateTime.UtcNow)
-                );
+                OrderCancelRequest cancelRequest = new OrderCancelRequest();
+                cancelRequest.Set(new OrigClOrdID(origClOrdId));
+                cancelRequest.Set(new ClOrdID(clOrdId));
+                cancelRequest.Set(new Symbol(symbol));
+                cancelRequest.Set(new Side(side));
+                cancelRequest.Set(new TransactTime(DateTime.UtcNow));
 
                 cancelRequest.OrderQty = new OrderQty(quantity);
 
@@ -254,9 +289,9 @@ namespace QuickFixCli
             string origClOrdId,
             string symbol,
             char side,
-            double quantity,
+            decimal quantity,
             char orderType,
-            double price,
+            decimal price,
             char timeInForce = TimeInForce.DAY)
         {
             if (_sessionId == null)
@@ -269,14 +304,13 @@ namespace QuickFixCli
 
             try
             {
-                OrderCancelReplaceRequest replaceRequest = new OrderCancelReplaceRequest(
-                    new OrigClOrdID(origClOrdId),
-                    new ClOrdID(clOrdId),
-                    new Symbol(symbol),
-                    new Side(side),
-                    new TransactTime(DateTime.UtcNow),
-                    new OrdType(orderType)
-                );
+                OrderCancelReplaceRequest replaceRequest = new OrderCancelReplaceRequest();
+                replaceRequest.Set(new OrigClOrdID(origClOrdId));
+                replaceRequest.Set(new ClOrdID(clOrdId));
+                replaceRequest.Set(new Symbol(symbol));
+                replaceRequest.Set(new Side(side));
+                replaceRequest.Set(new TransactTime(DateTime.UtcNow));
+                replaceRequest.Set(new OrdType(orderType));
 
                 replaceRequest.OrderQty = new OrderQty(quantity);
                 replaceRequest.TimeInForce = new TimeInForce(timeInForce);
@@ -306,9 +340,8 @@ namespace QuickFixCli
 
             try
             {
-                OrderStatusRequest statusRequest = new OrderStatusRequest(
-                    new ClOrdID(clOrdId)
-                );
+                OrderStatusRequest statusRequest = new OrderStatusRequest();
+                statusRequest.Set(new ClOrdID(clOrdId));
 
                 Session.SendToTarget(statusRequest, _sessionId);
                 Console.WriteLine($"Requested status for order {clOrdId}");
@@ -363,12 +396,14 @@ namespace QuickFixCli
 
             try
             {
+                var utcNow = DateTime.UtcNow;
                 RequestForPositions request = new RequestForPositions(
                     new PosReqID(posReqId),
                     new PosReqType(PosReqType.POSITIONS),
-                    new TransactTime(DateTime.UtcNow),
-                    new AccountType(AccountType.ACCOUNT_IS_CARRIED_ON_CUSTOMER_SIDE_OF_BOOKS)
-                );
+                    new Account(Username),
+                    new AccountType(AccountType.ACCOUNT_IS_CARRIED_ON_CUSTOMER_SIDE_OF_BOOKS),
+                    new ClearingBusinessDate(utcNow.ToString("yyyyMMdd")),
+                    new TransactTime(utcNow));
 
                 Session.SendToTarget(request, _sessionId);
                 Console.WriteLine($"Requested positions with ID {posReqId}");
