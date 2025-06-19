@@ -32,22 +32,17 @@ namespace QuickFixCli
         {
             Console.WriteLine($"TradingClient received app message: {message}");
 
-            string msgType = message.Header.GetString(Tags.MsgType);
-
-            // Handle custom message types directly before cracking
-            if (msgType == MsgType_RequestForPositionsAck)
+            // Use MessageCracker to handle all message types
+            try
             {
-                OnMessage_RequestForPositionsAck(message, sessionID);
-                return;
+                Crack(message, sessionID);
             }
-            else if (msgType == MsgType_AccountInfoResponse)
+            catch (UnsupportedMessageType)
             {
-                OnMessage_AccountInfoResponse(message, sessionID);
-                return;
+                Console.WriteLine($"Unsupported message type: {message.Header.GetString(Tags.MsgType)}");
+                // For unsupported message types, pass to base class
+                base.FromApp(message, sessionID);
             }
-
-            // Let MessageCracker handle standard message types
-            Crack(message, sessionID);
         }
 
         #endregion
@@ -165,42 +160,50 @@ namespace QuickFixCli
                 Console.WriteLine($"  Settle Price: {posReport.SettlPrice.Value}");
         }
 
-        // Handle RequestForPositionsAck messages (custom handler)
-        public void OnMessage_RequestForPositionsAck(QuickFix.Message message, SessionID sessionID)
+        // Handle RequestForPositionsAck messages using proper message type
+        public void OnMessage(RequestForPositionsAck posAck, SessionID sessionID)
         {
-            string posReqId = message.GetString(Tags.PosReqID);
-            int totalPositions = message.GetInt(Tags.TotalNumPosReports);
+            string posReqId = posAck.PosReqID.Value;
+            int totalPositions = posAck.TotalNumPosReports.Value;
 
             Console.WriteLine($"Received RequestForPositionsAck: {posReqId}");
             Console.WriteLine($"  Total positions: {totalPositions}");
 
-            if (message.IsSetField(Tags.Text))
+            if (posAck.IsSetText())
             {
-                Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
+                Console.WriteLine($"  Text: {posAck.Text.Value}");
             }
         }
 
-        // Handle AccountInfoResponse messages (custom handler)
-        public void OnMessage_AccountInfoResponse(QuickFix.Message message, SessionID sessionID)
+        // Handle AccountInfo messages using proper message type
+        public void OnMessage(AccountInfo accountInfo, SessionID sessionID)
         {
-            string account = message.GetString(Tags.Account);
-            Console.WriteLine($"Received AccountInfoResponse for account: {account}");
+            Console.WriteLine($"Received AccountInfo for account: {accountInfo.Account.Value}");
 
-            // Log any account fields present in the message
-            if (message.IsSetField(1001)) // Example custom field for balance
-            {
-                Console.WriteLine($"  Balance: {message.GetDecimal(1001)}");
-            }
+            // Log account information fields
+            if (accountInfo.IsSetBalance())
+                Console.WriteLine($"  Balance: {accountInfo.Balance.Value}");
 
-            if (message.IsSetField(1002)) // Example custom field for margin
-            {
-                Console.WriteLine($"  Margin: {message.GetDecimal(1002)}");
-            }
+            if (accountInfo.IsSetMarginRatio())
+                Console.WriteLine($"  Margin Ratio: {accountInfo.MarginRatio.Value}");
 
-            if (message.IsSetField(Tags.Text))
-            {
-                Console.WriteLine($"  Text: {message.GetString(Tags.Text)}");
-            }
+            if (accountInfo.IsSetAvailableForMarginTrading())
+                Console.WriteLine($"  Available for Margin Trading: {accountInfo.AvailableForMarginTrading.Value}");
+
+            if (accountInfo.IsSetSecurityDeposit())
+                Console.WriteLine($"  Security Deposit: {accountInfo.SecurityDeposit.Value}");
+
+            if (accountInfo.IsSetClosedPL())
+                Console.WriteLine($"  Closed P/L: {accountInfo.ClosedPL.Value}");
+
+            if (accountInfo.IsSetOpenPL())
+                Console.WriteLine($"  Open P/L: {accountInfo.OpenPL.Value}");
+
+            if (accountInfo.IsSetMarginRequirement())
+                Console.WriteLine($"  Margin Requirement: {accountInfo.MarginRequirement.Value}");
+
+            if (accountInfo.IsSetNetOpenPosition())
+                Console.WriteLine($"  Net Open Position: {accountInfo.NetOpenPosition.Value}");
         }
 
         #endregion
