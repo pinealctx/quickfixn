@@ -15,6 +15,8 @@ namespace QuickFixCli
         public const string MsgType_RequestForPositionsAck = "AO";
         public const string MsgType_PositionReport = "AP";
 
+        public const string TimeFormat = "yyyyMMdd-HH:mm:ss";
+
         public TradingClientApp(string username, string password) : base(username, password)
         {
             Console.WriteLine("TradingClientApp initialized");
@@ -47,7 +49,222 @@ namespace QuickFixCli
 
         #endregion
 
-        #region Message Handlers
+        #region Account/Position Message Request and Response
+
+        // Request account information
+        public void RequestAccountInfo(string account)
+        {
+            if (_sessionId == null)
+            {
+                Console.WriteLine("Cannot request account info - not logged in");
+                return;
+            }
+
+            try
+            {
+                // Create a custom AccountInfoRequest message
+                AccountInfoRequest request = new AccountInfoRequest();
+                request.Set(new Account(account));
+                Session.SendToTarget(request, _sessionId);
+                Console.WriteLine($"Requested account information for {account}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error requesting account info: {ex.Message}");
+            }
+        }
+
+        // Request positions
+        public void RequestPositions(string account)
+        {
+            if (_sessionId == null)
+            {
+                Console.WriteLine("Cannot request positions - not logged in");
+                return;
+            }
+
+            string posReqId = Guid.NewGuid().ToString().Replace("-", "");
+
+            try
+            {
+                var utcNow = DateTime.UtcNow;
+                RequestForPositions request = new RequestForPositions(
+                    new PosReqID(posReqId),
+                    new PosReqType(PosReqType.POSITIONS),
+                    new Account(account),
+                    new AccountType(AccountType.ACCOUNT_IS_CARRIED_ON_CUSTOMER_SIDE_OF_BOOKS),
+                    new ClearingBusinessDate(utcNow.ToString(TimeFormat)),
+                    new TransactTime(utcNow));
+                request.Set(new NoPartyIDs(0));
+                Session.SendToTarget(request, _sessionId);
+                Console.WriteLine($"Requested positions with ID {posReqId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error requesting positions: {ex.Message}");
+            }
+        }
+
+        // Handle AccountInfo messages using proper message type
+        public void OnMessage(AccountInfo accountInfo, SessionID sessionID)
+        {
+            Console.WriteLine($"Received AccountInfo for account: {accountInfo.Account.Value}");
+
+            // Log account information fields
+            if (accountInfo.IsSetCurrency())
+            {
+                Console.WriteLine($"  Currency: {accountInfo.Currency.Value}");
+            }
+
+            if (accountInfo.IsSetMarginRatio())
+            {
+                Console.WriteLine($"  Margin Ratio: {accountInfo.MarginRatio.Value}");
+            }
+
+            if (accountInfo.IsSetBalance())
+            {
+                Console.WriteLine($"  Balance: {accountInfo.Balance.Value}");
+            }
+
+            if (accountInfo.IsSetAvailableForMarginTrading())
+            {
+                Console.WriteLine($"  Available for Margin Trading: {accountInfo.AvailableForMarginTrading.Value}");
+            }
+
+            if (accountInfo.IsSetSecurityDeposit())
+            {
+                Console.WriteLine($"  Security Deposit: {accountInfo.SecurityDeposit.Value}");
+            }
+
+            if (accountInfo.IsSetClosedPL())
+            {
+                Console.WriteLine($"  Closed P/L: {accountInfo.ClosedPL.Value}");
+            }
+
+            if (accountInfo.IsSetOpenPL())
+            {
+                Console.WriteLine($"  Open P/L: {accountInfo.OpenPL.Value}");
+            }
+
+            if (accountInfo.IsSetMarginRequirement())
+            {
+                Console.WriteLine($"  Margin Requirement: {accountInfo.MarginRequirement.Value}");
+            }
+
+            if (accountInfo.IsSetNetOpenPosition())
+            {
+                Console.WriteLine($"  Net Open Position: {accountInfo.NetOpenPosition.Value}");
+            }
+        }
+
+        // Handle RequestForPositionsAck messages using proper message type
+        public void OnMessage(RequestForPositionsAck posAck, SessionID sessionID)
+        {
+            string posReqId = posAck.PosReqID.Value;
+            int totalPositions = posAck.TotalNumPosReports.Value;
+
+            Console.WriteLine($"Received RequestForPositionsAck: {posReqId}");
+            Console.WriteLine($"  Total positions: {totalPositions}");
+
+            if (posAck.IsSetText())
+            {
+                Console.WriteLine($"  Text: {posAck.Text.Value}");
+            }
+        }
+
+        // Handle PositionReport messages
+        public void OnMessage(PositionReport posReport, SessionID sessionID)
+        {
+            string symbol = posReport.Symbol.Value;
+            string posReqId = posReport.PosReqID.Value;
+
+            Console.WriteLine($"Received PositionReport for {symbol}, reqID: {posReqId}");
+
+            if (posReport.IsSetSettlPrice())
+            {
+                Console.WriteLine($"  Settle Price: {posReport.SettlPrice.Value}");
+            }
+
+            if (posReport.IsSetPriorSettlPrice())
+            {
+                Console.WriteLine($"  Prior Settle Price: {posReport.PriorSettlPrice.Value}");
+            }
+
+            // Loop through position quantities
+            int posCount = posReport.NoPositions.Value;
+            for (int i = 1; i <= posCount; i++)
+            {
+                PositionReport.NoPositionsGroup posGroup = new PositionReport.NoPositionsGroup();
+                posReport.GetGroup(i, posGroup);
+
+                string posType = posGroup.PosType.Value;
+
+                if (posGroup.IsSetLongQty())
+                {
+                    Console.WriteLine($"  Long position: {posGroup.LongQty.Value} {posType}");
+                }
+
+                if (posGroup.IsSetShortQty())
+                {
+                    Console.WriteLine($"  Short position: {posGroup.ShortQty.Value} {posType}");
+                }
+            }
+        }
+
+        #endregion
+
+        #region Trading Methods and Callbacks
+        // Send a new order
+        public void PlaceOrder(
+            string symbol,
+            char orderType,
+            char timeInForce,
+            char side,
+            decimal quantity,
+            decimal? price = null,
+            decimal? stopPrice = null)
+        {
+            if (_sessionId == null)
+            {
+                Console.WriteLine("Cannot place order - not logged in");
+                return;
+            }
+
+            // Generate a unique order ID
+            string clOrdId = Guid.NewGuid().ToString().Replace("-", "");
+
+            try
+            {
+                // Create the order message
+                NewOrderSingle order = new NewOrderSingle();
+                order.Set(new ClOrdID(clOrdId));
+                order.Set(new Symbol(symbol));
+                order.Set(new Side(side));
+                order.Set(new TransactTime(DateTime.UtcNow));
+                order.Set(new OrdType(orderType));
+
+                order.OrderQty = new OrderQty(quantity);
+                order.TimeInForce = new TimeInForce(timeInForce);
+
+                //if (price.HasValue && (orderType == OrdType.LIMIT || orderType == OrdType.STOP_LIMIT))
+                if (price != null)
+                {
+                    order.Price = new Price(price.Value);
+                }
+                if (stopPrice != null)
+                {
+                    order.StopPx = new StopPx(stopPrice.Value);
+                }
+
+                // Send the order
+                Session.SendToTarget(order, _sessionId);
+                Console.WriteLine($"Placed {side} order for {quantity} {symbol} with ID {clOrdId}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error placing order: {ex.Message}");
+            }
+        }
 
         // Handle ExecutionReport responses (for orders)
         public void OnMessage(ExecutionReport execReport, SessionID sessionID)
@@ -67,6 +284,116 @@ namespace QuickFixCli
             if (execReport.IsSetOrderID())
             {
                 Console.WriteLine($"  OrderID: {execReport.OrderID.Value}");
+            }
+
+            if (execReport.IsSetClOrdID())
+            {
+                Console.WriteLine($"  ClOrdID: {execReport.ClOrdID.Value}");
+            }
+
+            if (execReport.IsSetOrigClOrdID())
+            {
+                Console.WriteLine($"  OrigClOrdID: {execReport.OrigClOrdID.Value}");
+            }
+
+            if (execReport.IsSetListID())
+            {
+                Console.WriteLine($"  ListID: {execReport.ListID.Value}");
+            }
+
+            if (execReport.IsSetExecID())
+            {
+                Console.WriteLine($"  ExecID: {execReport.ExecID.Value}");
+            }
+
+            if (execReport.IsSetExecType())
+            {
+                Console.WriteLine($"  ExecType: {execReport.ExecType.Value}");
+            }
+
+            if (execReport.IsSetTotNumReports())
+            {
+                Console.WriteLine($"  TotNumReports: {execReport.TotNumReports.Value}");
+            }
+
+            if (execReport.IsSetLastRptRequested())
+            {
+                Console.WriteLine($"  LastRptRequested: {execReport.LastRptRequested.Value}");
+            }
+
+            if (execReport.IsSetAccount())
+            {
+                Console.WriteLine($"  Account: {execReport.Account.Value}");
+            }
+
+            if (execReport.IsSetSide())
+            {
+                Console.WriteLine($"  Side: {execReport.Side.Value}");
+            }
+
+            if (execReport.IsSetOrdType())
+            {
+                Console.WriteLine($"  OrdType: {execReport.OrdType.Value}");
+            }
+
+            if (execReport.IsSetSettlDate())
+            {
+                Console.WriteLine($"  SettlDate: {execReport.SettlDate.Value}");
+            }
+
+            if (execReport.IsSetTransactTime())
+            {
+                Console.WriteLine($"  TransactTime: {execReport.TransactTime.Value}");
+            }
+
+            if (execReport.IsSetStopPx())
+            {
+                Console.WriteLine($"  StopPx: {execReport.StopPx.Value}");
+            }
+
+            if (execReport.IsSetTimeInForce())
+            {
+                Console.WriteLine($"  TimeInForce: {execReport.TimeInForce.Value}");
+            }
+
+            if (execReport.IsSetCurrency())
+            {
+                Console.WriteLine($"  Currency: {execReport.Currency.Value}");
+            }
+
+            if (execReport.IsSetExpireDate())
+            {
+                Console.WriteLine($"  ExpireDate: {execReport.ExpireDate.Value}");
+            }
+
+            if (execReport.IsSetLastQty())
+            {
+                Console.WriteLine($"  LastQty: {execReport.LastQty.Value}");
+            }
+
+            if (execReport.IsSetLastPx())
+            {
+                Console.WriteLine($"  LastPx: {execReport.LastPx.Value}");
+            }
+
+            if (execReport.IsSetCommission())
+            {
+                Console.WriteLine($"  Commission: {execReport.Commission.Value}");
+            }
+
+            if (execReport.IsSetCommType())
+            {
+                Console.WriteLine($"  CommType: {execReport.CommType.Value}");
+            }
+
+            if (execReport.IsSetCommCurrency())
+            {
+                Console.WriteLine($"  CommCurrency: {execReport.CommCurrency.Value}");
+            }
+
+            if (execReport.IsSetOrdRejReason())
+            {
+                Console.WriteLine($"  OrdRejReason: {execReport.OrdRejReason.Value}");
             }
 
             if (execReport.IsSetSymbol())
@@ -102,160 +429,13 @@ namespace QuickFixCli
             // Handle based on mass status if needed
             if (execReport.IsSetMassStatusReqID())
             {
-                string massStatusReqId = execReport.MassStatusReqID.Value;
-                Console.WriteLine($"  Part of mass status request: {massStatusReqId}");
+                Console.WriteLine($"  Part of mass status request: {execReport.MassStatusReqID.Value}");
             }
-        }
-
-        // Handle OrderCancelReject responses
-        public void OnMessage(OrderCancelReject cancelReject, SessionID sessionID)
-        {
-            string clOrdId = cancelReject.ClOrdID.Value;
-            string origClOrdId = cancelReject.OrigClOrdID.Value;
-            char ordStatus = cancelReject.OrdStatus.Value;
-
-            Console.WriteLine($"Received OrderCancelReject: ClOrdID={clOrdId}, OrigClOrdID={origClOrdId}");
-            Console.WriteLine($"  Status: {ordStatus}");
-
-            if (cancelReject.IsSetText())
-            {
-                Console.WriteLine($"  Reason: {cancelReject.Text.Value}");
-            }
-
-            if (cancelReject.IsSetCxlRejReason())
-            {
-                Console.WriteLine($"  CxlRejReason: {cancelReject.CxlRejReason.Value}");
-            }
-        }
-
-        // Handle PositionReport messages
-        public void OnMessage(PositionReport posReport, SessionID sessionID)
-        {
-            string symbol = posReport.Symbol.Value;
-            string posReqId = posReport.PosReqID.Value;
-
-            Console.WriteLine($"Received PositionReport for {symbol}, reqID: {posReqId}");
-
-            // Loop through position quantities
-            int posCount = posReport.NoPositions.Value;
-            for (int i = 1; i <= posCount; i++)
-            {
-                PositionReport.NoPositionsGroup posGroup = new PositionReport.NoPositionsGroup();
-                posReport.GetGroup(i, posGroup);
-
-                string posType = posGroup.PosType.Value;
-
-                if (posGroup.IsSetLongQty())
-                {
-                    Console.WriteLine($"  Long position: {posGroup.LongQty.Value} {posType}");
-                }
-
-                if (posGroup.IsSetShortQty())
-                {
-                    Console.WriteLine($"  Short position: {posGroup.ShortQty.Value} {posType}");
-                }
-            }
-
-            if (posReport.IsSetSettlPrice())
-                Console.WriteLine($"  Settle Price: {posReport.SettlPrice.Value}");
-        }
-
-        // Handle RequestForPositionsAck messages using proper message type
-        public void OnMessage(RequestForPositionsAck posAck, SessionID sessionID)
-        {
-            string posReqId = posAck.PosReqID.Value;
-            int totalPositions = posAck.TotalNumPosReports.Value;
-
-            Console.WriteLine($"Received RequestForPositionsAck: {posReqId}");
-            Console.WriteLine($"  Total positions: {totalPositions}");
-
-            if (posAck.IsSetText())
-            {
-                Console.WriteLine($"  Text: {posAck.Text.Value}");
-            }
-        }
-
-        // Handle AccountInfo messages using proper message type
-        public void OnMessage(AccountInfo accountInfo, SessionID sessionID)
-        {
-            Console.WriteLine($"Received AccountInfo for account: {accountInfo.Account.Value}");
-
-            // Log account information fields
-            if (accountInfo.IsSetBalance())
-                Console.WriteLine($"  Balance: {accountInfo.Balance.Value}");
-
-            if (accountInfo.IsSetMarginRatio())
-                Console.WriteLine($"  Margin Ratio: {accountInfo.MarginRatio.Value}");
-
-            if (accountInfo.IsSetAvailableForMarginTrading())
-                Console.WriteLine($"  Available for Margin Trading: {accountInfo.AvailableForMarginTrading.Value}");
-
-            if (accountInfo.IsSetSecurityDeposit())
-                Console.WriteLine($"  Security Deposit: {accountInfo.SecurityDeposit.Value}");
-
-            if (accountInfo.IsSetClosedPL())
-                Console.WriteLine($"  Closed P/L: {accountInfo.ClosedPL.Value}");
-
-            if (accountInfo.IsSetOpenPL())
-                Console.WriteLine($"  Open P/L: {accountInfo.OpenPL.Value}");
-
-            if (accountInfo.IsSetMarginRequirement())
-                Console.WriteLine($"  Margin Requirement: {accountInfo.MarginRequirement.Value}");
-
-            if (accountInfo.IsSetNetOpenPosition())
-                Console.WriteLine($"  Net Open Position: {accountInfo.NetOpenPosition.Value}");
         }
 
         #endregion
 
         #region Trading Methods
-
-        // Send a new order
-        public void PlaceOrder(
-            string symbol,
-            char side,
-            decimal quantity,
-            char orderType,
-            decimal? price = null,
-            char timeInForce = TimeInForce.DAY)
-        {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot place order - not logged in");
-                return;
-            }
-
-            // Generate a unique order ID
-            string clOrdId = Guid.NewGuid().ToString().Replace("-", "");
-
-            try
-            {
-                // Create the order message
-                NewOrderSingle order = new NewOrderSingle();
-                order.Set(new ClOrdID(clOrdId));
-                order.Set(new Symbol(symbol));
-                order.Set(new Side(side));
-                order.Set(new TransactTime(DateTime.UtcNow));
-                order.Set(new OrdType(orderType));
-
-                order.OrderQty = new OrderQty(quantity);
-                order.TimeInForce = new TimeInForce(timeInForce);
-
-                if (price.HasValue && (orderType == OrdType.LIMIT || orderType == OrdType.STOP_LIMIT))
-                {
-                    order.Price = new Price(price.Value);
-                }
-
-                // Send the order
-                Session.SendToTarget(order, _sessionId);
-                Console.WriteLine($"Placed {side} order for {quantity} {symbol} with ID {clOrdId}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error placing order: {ex.Message}");
-            }
-        }
-
         // Cancel an existing order
         public void CancelOrder(string origClOrdId, string symbol, char side, decimal quantity)
         {
@@ -382,64 +562,24 @@ namespace QuickFixCli
             }
         }
 
-        #endregion
-
-        #region Position and Account Methods
-
-        // Request positions
-        public void RequestPositions()
+        // Handle OrderCancelReject responses
+        public void OnMessage(OrderCancelReject cancelReject, SessionID sessionID)
         {
-            if (_sessionId == null)
+            string clOrdId = cancelReject.ClOrdID.Value;
+            string origClOrdId = cancelReject.OrigClOrdID.Value;
+            char ordStatus = cancelReject.OrdStatus.Value;
+
+            Console.WriteLine($"Received OrderCancelReject: ClOrdID={clOrdId}, OrigClOrdID={origClOrdId}");
+            Console.WriteLine($"  Status: {ordStatus}");
+
+            if (cancelReject.IsSetText())
             {
-                Console.WriteLine("Cannot request positions - not logged in");
-                return;
+                Console.WriteLine($"  Reason: {cancelReject.Text.Value}");
             }
 
-            string posReqId = Guid.NewGuid().ToString().Replace("-", "");
-
-            try
+            if (cancelReject.IsSetCxlRejReason())
             {
-                var utcNow = DateTime.UtcNow;
-                RequestForPositions request = new RequestForPositions(
-                    new PosReqID(posReqId),
-                    new PosReqType(PosReqType.POSITIONS),
-                    new Account(Username),
-                    new AccountType(AccountType.ACCOUNT_IS_CARRIED_ON_CUSTOMER_SIDE_OF_BOOKS),
-                    new ClearingBusinessDate(utcNow.ToString("yyyyMMdd")),
-                    new TransactTime(utcNow));
-
-                Session.SendToTarget(request, _sessionId);
-                Console.WriteLine($"Requested positions with ID {posReqId}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error requesting positions: {ex.Message}");
-            }
-        }
-
-        // Request account information
-        public void RequestAccountInfo(string account)
-        {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot request account info - not logged in");
-                return;
-            }
-
-            try
-            {
-                // Create a custom AccountInfoRequest message
-                QuickFix.Message request = new QuickFix.Message();
-                request.Header.SetField(new MsgType(MsgType_AccountInfoRequest));
-                request.SetField(new Account(account));
-                request.SetField(new TransactTime(DateTime.UtcNow));
-
-                Session.SendToTarget(request, _sessionId);
-                Console.WriteLine($"Requested account information for {account}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error requesting account info: {ex.Message}");
+                Console.WriteLine($"  CxlRejReason: {cancelReject.CxlRejReason.Value}");
             }
         }
 

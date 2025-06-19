@@ -15,12 +15,6 @@ namespace QuickFixCli
             _password = password;
         }
 
-        // Property to get _username
-        public string Username
-        {
-            get { return _username; }
-        }
-
         #region IApplication Members
 
         public virtual void OnCreate(SessionID sessionID)
