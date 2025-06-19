@@ -34,7 +34,8 @@ namespace QuickFixCli
 
         public virtual void FromAdmin(QuickFix.Message message, SessionID sessionID)
         {
-            Console.WriteLine($"Received admin message: {message} from session: {sessionID}");
+            var msgText = message.ToString().Replace((char)1, '|');
+            Console.WriteLine($"Received admin message: {msgText} from session: {sessionID}");
 
             // Using Message Cracker to handle specific admin message types
             try
@@ -49,7 +50,8 @@ namespace QuickFixCli
 
         public virtual void ToAdmin(QuickFix.Message message, SessionID sessionID)
         {
-            Console.WriteLine($"Sending admin message: {message} to session: {sessionID}");
+            var msgText = message.ToString().Replace((char)1, '|');
+            Console.WriteLine($"Sending admin message: {msgText} to session: {sessionID}");
             // Add login credentials to the Logon message
             if (message.Header.GetString(Tags.MsgType) == Logon.MsgType)
             {
@@ -63,7 +65,8 @@ namespace QuickFixCli
 
         public virtual void FromApp(QuickFix.Message message, SessionID sessionID)
         {
-            Console.WriteLine("Received application message: " + message + " from session: " + sessionID);
+            var msgText = message.ToString().Replace((char)1, '|');
+            Console.WriteLine($"Received application message: {msgText} from session: {sessionID}");
 
             // Using Message Cracker to handle specific app message types
             Crack(message, sessionID);
@@ -71,7 +74,8 @@ namespace QuickFixCli
 
         public virtual void ToApp(QuickFix.Message message, SessionID sessionID)
         {
-            Console.WriteLine($"Sending application message: {message} to session: {sessionID}");
+            var msgText = message.ToString().Replace((char)1, '|');
+            Console.WriteLine($"Sending application message: {msgText} to session: {sessionID}");
         }
 
         #endregion
@@ -93,7 +97,9 @@ namespace QuickFixCli
         // Handle Reject messages
         public virtual void OnMessage(Reject reject, SessionID sessionID)
         {
-            Console.WriteLine($"Received Reject message: {reject.Text.Value} for session: {sessionID}");
+            // TODO: add reject hander later
+            //Console.WriteLine($"Received Reject message: {reject.Text.Value} for session: {sessionID}");
+            Console.WriteLine($"Received Reject message for session: {sessionID}");
         }
 
         #endregion

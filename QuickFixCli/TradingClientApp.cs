@@ -32,7 +32,8 @@ namespace QuickFixCli
 
         public override void FromApp(QuickFix.Message message, SessionID sessionID)
         {
-            Console.WriteLine($"TradingClient received app message: {message}");
+            var msgText = message.ToString().Replace((char)1, '|');
+            Console.WriteLine($"TradingClient received app message: {msgText}");
 
             // Use MessageCracker to handle all message types
             try
@@ -222,6 +223,7 @@ namespace QuickFixCli
             char side,
             decimal quantity,
             decimal? price = null,
+            string? account = null,
             decimal? stopPrice = null)
         {
             if (_sessionId == null)
@@ -251,6 +253,12 @@ namespace QuickFixCli
                 {
                     order.Price = new Price(price.Value);
                 }
+
+                if (account != null)
+                {
+                    order.Set(new Account(account));
+                }
+
                 if (stopPrice != null)
                 {
                     order.StopPx = new StopPx(stopPrice.Value);

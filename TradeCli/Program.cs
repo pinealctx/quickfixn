@@ -72,9 +72,9 @@ namespace TradeCli
 
                     case "order":
                         // Place an order
-                        if (args.Length < 10)
+                        if (args.Length < 9)
                         {
-                            Console.WriteLine("Order command requires: symbol, orderType, timeInForce, side, quantity, [price], [stopPrice]");
+                            Console.WriteLine("Order command requires: symbol, orderType, timeInForce, side, quantity");
                             break;
                         }
                         string symbol = args[4];
@@ -82,11 +82,45 @@ namespace TradeCli
                         char timeInForce = args[6][0]; // '1' for Day, '2' for IOC, etc.
                         char side = args[7][0]; // '1' for Buy, '2' for Sell
                         decimal quantity = decimal.Parse(args[8]);
-                        decimal? price = args.Length > 9 ? decimal.Parse(args[9]) : null;
-                        decimal? stopPrice = args.Length > 10 ? decimal.Parse(args[10]) : null;
 
-                        Console.WriteLine($"Placing order: {symbol} {(side == '1' ? "BUY" : "SELL")} {quantity} @ {(price.HasValue ? price.ToString() : "Market")}");
-                        application.PlaceOrder(symbol, orderType, timeInForce, side, quantity, price, stopPrice);
+                        // Optional parameters - parse in the same order as the method signature
+                        decimal? price = null;
+                        string? account = null;
+                        decimal? stopPrice = null;
+
+                        // Parse price if provided (arg 9)
+                        if (args.Length > 9 && !string.IsNullOrWhiteSpace(args[9]))
+                        {
+                            price = decimal.Parse(args[9]);
+                        }
+
+                        // Parse account if provided (arg 10)
+                        if (args.Length > 10 && !string.IsNullOrWhiteSpace(args[10]))
+                        {
+                            account = args[10];
+                        }
+
+                        // Parse stopPrice if provided (arg 11)
+                        if (args.Length > 11 && !string.IsNullOrWhiteSpace(args[11]))
+                        {
+                            stopPrice = decimal.Parse(args[11]);
+                        }
+
+                        Console.WriteLine($"Placing order: {symbol} {(side == '1' ? "BUY" : "SELL")} {quantity}" +
+                            $"{(price.HasValue ? $" @ {price}" : " @ Market")}" +
+                            $"{(account != null ? $" for account {account}" : "")}" +
+                            $"{(stopPrice.HasValue ? $" with stop price {stopPrice}" : "")}");
+
+                        // Call PlaceOrder with parameters in the correct order according to the method signature
+                        application.PlaceOrder(
+                            symbol,
+                            orderType,
+                            timeInForce,
+                            side,
+                            quantity,
+                            price,       // Optional price 
+                            account,     // Optional account
+                            stopPrice);  // Optional stop price
                         break;
 
                     default:
@@ -112,12 +146,15 @@ namespace TradeCli
             Console.WriteLine("Commands:");
             Console.WriteLine("  account ACCOUNT_ID");
             Console.WriteLine("  positions ACCOUNT_ID");
-            Console.WriteLine("  order SYMBOL ORDER_TYPE TIME_IN_FORCE SIDE QUANTITY [PRICE] [STOP_PRICE]");
+            Console.WriteLine("  order SYMBOL ORDER_TYPE TIME_IN_FORCE SIDE QUANTITY [PRICE] [ACCOUNT] [STOP_PRICE]");
             Console.WriteLine();
             Console.WriteLine("Examples:");
             Console.WriteLine("  TradeCli client.cfg trader1 password account ACC123");
             Console.WriteLine("  TradeCli client.cfg trader1 password positions ACC123");
+            Console.WriteLine("  TradeCli client.cfg trader1 password order EURUSD 2 1 1 10000");
             Console.WriteLine("  TradeCli client.cfg trader1 password order EURUSD 2 1 1 10000 1.1234");
+            Console.WriteLine("  TradeCli client.cfg trader1 password order EURUSD 2 1 1 10000 1.1234 ACC123");
+            Console.WriteLine("  TradeCli client.cfg trader1 password order EURUSD 2 1 1 10000 1.1234 ACC123 1.1200");
             Console.WriteLine();
             Console.WriteLine("Order Types: 1=Market, 2=Limit, 3=Stop, 4=Stop-Limit");
             Console.WriteLine("Time In Force: 1=Day, 2=IOC, 3=OPG, 4=GTC, 5=GTX");
