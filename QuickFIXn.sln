@@ -56,6 +56,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFixCli", "QuickFixCli\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickFixSrv", "QuickFixSrv\QuickFixSrv.csproj", "{00712CD0-4ED0-4F76-A72E-6B310FA344AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TradeCli", "TradeCli\TradeCli.csproj", "{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -232,6 +234,14 @@ Global
 		{00712CD0-4ED0-4F76-A72E-6B310FA344AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{00712CD0-4ED0-4F76-A72E-6B310FA344AE}.Release|x64.ActiveCfg = Release|Any CPU
 		{00712CD0-4ED0-4F76-A72E-6B310FA344AE}.Release|x64.Build.0 = Release|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Debug|x64.Build.0 = Debug|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Release|Any CPU.Build.0 = Release|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Release|x64.ActiveCfg = Release|Any CPU
+		{784AE322-9EC4-4A68-AB4E-1D5A5F9AF701}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
