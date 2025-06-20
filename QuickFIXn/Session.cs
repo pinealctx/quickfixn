@@ -564,11 +564,11 @@ namespace QuickFix
 
                 if (SessionID.IsFIXT && !Message.IsAdminMsgType(msgType))
                 {
-                    DataDictionary.DataDictionary.Validate(message, SessionDataDictionary, ApplicationDataDictionary, beginString, msgType);
+                    // DataDictionary.DataDictionary.Validate(message, SessionDataDictionary, ApplicationDataDictionary, beginString, msgType);
                 }
                 else
                 {
-                    DataDictionary.DataDictionary.Validate(message, SessionDataDictionary, SessionDataDictionary, beginString, msgType);
+                    // DataDictionary.DataDictionary.Validate(message, SessionDataDictionary, SessionDataDictionary, beginString, msgType);
                 }
 
                 if (MsgType.LOGON.Equals(msgType))

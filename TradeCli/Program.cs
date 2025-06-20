@@ -159,7 +159,12 @@ namespace TradeCli
             Console.WriteLine("  TradeCli client.cfg trader1 password order EURUSD 2 1 1 10000 1.1234 ACC123 1.1200");
             Console.WriteLine();
             Console.WriteLine("Order Types: 1=Market, 2=Limit, 3=Stop, 4=Stop-Limit");
-            Console.WriteLine("Time In Force: 1=Day, 2=IOC, 3=OPG, 4=GTC, 5=GTX");
+            Console.WriteLine("Time In Force:");
+            Console.WriteLine("  1=Day (DAY) - Valid for the day only");
+            Console.WriteLine("  2=IOC (IMMEDIATE_OR_CANCEL) - Execute immediately, cancel unfilled");
+            Console.WriteLine("  3=OPG (AT_THE_OPENING) - Execute at the opening of market");
+            Console.WriteLine("  4=GTC (GOOD_TILL_CANCEL) - Valid until explicitly cancelled");
+            Console.WriteLine("  5=GTX (GOOD_TILL_CROSSING) - Valid until the next trading session");
             Console.WriteLine("Side: 1=Buy, 2=Sell");
         }
     }
