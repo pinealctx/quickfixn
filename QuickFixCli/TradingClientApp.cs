@@ -213,7 +213,11 @@ namespace QuickFixCli
                 {
                     order.StopPx = new StopPx(stopPrice.Value);
                 }
-
+                var group = new NewOrderSingle.NoPartyIDsGroup();
+                group.PartyID = new PartyID("PARTY1");
+                group.PartyIDSource = new PartyIDSource(PartyIDSource.PROPRIETARY);
+                group.PartyRole = new PartyRole(PartyRole.CLIENT_ID);
+                order.AddGroup(group);
                 // Send the order
                 SendMessage(order);
                 Console.WriteLine($"Placed {side} order for {quantity} {symbol} with ID {clOrdId}");
