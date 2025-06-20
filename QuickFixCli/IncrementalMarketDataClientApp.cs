@@ -105,7 +105,7 @@ namespace QuickFixCli
         }
 
         // Send MassQuoteAcknowledgement after receiving MassQuote
-        private void SendMassQuoteAcknowledgement(SessionID sessionID, string quoteID)
+        public void SendMassQuoteAcknowledgement(SessionID sessionID, string quoteID)
         {
             try
             {
@@ -123,7 +123,7 @@ namespace QuickFixCli
         }
 
         // Override SendMarketDataRequest to specify we support incremental updates
-        protected override void SendMarketDataRequest(List<string> symbols)
+        public new void SendMarketDataRequest(List<string> symbols)
         {
             if (symbols == null || !symbols.Any())
             {

@@ -46,6 +46,8 @@ namespace TradeCli
                 // Process the command
                 switch (command)
                 {
+                    case "idle":
+                        break; // No action needed, just keep the client idle
                     case "account":
                         // Get account info
                         if (args.Length < 5)

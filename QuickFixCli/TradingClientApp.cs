@@ -6,9 +6,6 @@ namespace QuickFixCli
 {
     public class TradingClientApp : AuthClientApp
     {
-        // Session ID for sending messages
-        private SessionID? _sessionId;
-
         // Define custom message types that might not be included in QuickFix/n
         public const string MsgType_AccountInfoRequest = "AINF";
         public const string MsgType_AccountInfoResponse = "AINFR";
@@ -22,51 +19,17 @@ namespace QuickFixCli
             Console.WriteLine("TradingClientApp initialized");
         }
 
-        #region Override IApplication Members
-
-        public override void OnCreate(SessionID sessionID)
-        {
-            base.OnCreate(sessionID);
-            _sessionId = sessionID;
-        }
-
-        public override void FromApp(QuickFix.Message message, SessionID sessionID)
-        {
-            var msgText = message.ToString().Replace((char)1, '|');
-            Console.WriteLine($"TradingClient received app message: {msgText}");
-
-            // Use MessageCracker to handle all message types
-            try
-            {
-                Crack(message, sessionID);
-            }
-            catch (UnsupportedMessageType)
-            {
-                Console.WriteLine($"Unsupported message type: {message.Header.GetString(Tags.MsgType)}");
-                // For unsupported message types, pass to base class
-                base.FromApp(message, sessionID);
-            }
-        }
-
-        #endregion
-
         #region Account/Position Message Request and Response
 
         // Request account information
         public void RequestAccountInfo(string account)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot request account info - not logged in");
-                return;
-            }
-
             try
             {
                 // Create a custom AccountInfoRequest message
                 AccountInfoRequest request = new AccountInfoRequest();
                 request.Set(new Account(account));
-                Session.SendToTarget(request, _sessionId);
+                SendMessage(request);
                 Console.WriteLine($"Requested account information for {account}");
             }
             catch (Exception ex)
@@ -78,14 +41,7 @@ namespace QuickFixCli
         // Request positions
         public void RequestPositions(string account)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot request positions - not logged in");
-                return;
-            }
-
             string posReqId = Guid.NewGuid().ToString().Replace("-", "");
-
             try
             {
                 var utcNow = DateTime.UtcNow;
@@ -97,7 +53,7 @@ namespace QuickFixCli
                     new ClearingBusinessDate(utcNow.ToString(TimeFormat)),
                     new TransactTime(utcNow));
                 request.Set(new NoPartyIDs(0));
-                Session.SendToTarget(request, _sessionId);
+                SendMessage(request);
                 Console.WriteLine($"Requested positions with ID {posReqId}");
             }
             catch (Exception ex)
@@ -226,12 +182,6 @@ namespace QuickFixCli
             string? account = null,
             decimal? stopPrice = null)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot place order - not logged in");
-                return;
-            }
-
             // Generate a unique order ID
             string clOrdId = Guid.NewGuid().ToString().Replace("-", "");
 
@@ -265,7 +215,7 @@ namespace QuickFixCli
                 }
 
                 // Send the order
-                Session.SendToTarget(order, _sessionId);
+                SendMessage(order);
                 Console.WriteLine($"Placed {side} order for {quantity} {symbol} with ID {clOrdId}");
             }
             catch (Exception ex)
@@ -447,12 +397,6 @@ namespace QuickFixCli
         // Cancel an existing order
         public void CancelOrder(string origClOrdId, string symbol, char side, decimal quantity)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot cancel order - not logged in");
-                return;
-            }
-
             string clOrdId = Guid.NewGuid().ToString().Replace("-", "");
 
             try
@@ -465,8 +409,7 @@ namespace QuickFixCli
                 cancelRequest.Set(new TransactTime(DateTime.UtcNow));
 
                 cancelRequest.OrderQty = new OrderQty(quantity);
-
-                Session.SendToTarget(cancelRequest, _sessionId);
+                SendMessage(cancelRequest);
                 Console.WriteLine($"Requested to cancel order {origClOrdId} with new ID {clOrdId}");
             }
             catch (Exception ex)
@@ -485,12 +428,6 @@ namespace QuickFixCli
             decimal price,
             char timeInForce = TimeInForce.DAY)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot modify order - not logged in");
-                return;
-            }
-
             string clOrdId = Guid.NewGuid().ToString().Replace("-", "");
 
             try
@@ -511,7 +448,7 @@ namespace QuickFixCli
                     replaceRequest.Price = new Price(price);
                 }
 
-                Session.SendToTarget(replaceRequest, _sessionId);
+                SendMessage(replaceRequest);
                 Console.WriteLine($"Requested to modify order {origClOrdId} with new ID {clOrdId}");
             }
             catch (Exception ex)
@@ -523,18 +460,12 @@ namespace QuickFixCli
         // Get the status of a specific order
         public void GetOrderStatus(string clOrdId)
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot get order status - not logged in");
-                return;
-            }
-
             try
             {
                 OrderStatusRequest statusRequest = new OrderStatusRequest();
                 statusRequest.Set(new ClOrdID(clOrdId));
 
-                Session.SendToTarget(statusRequest, _sessionId);
+                SendMessage(statusRequest);
                 Console.WriteLine($"Requested status for order {clOrdId}");
             }
             catch (Exception ex)
@@ -546,12 +477,6 @@ namespace QuickFixCli
         // Get all open orders
         public void GetAllOrders()
         {
-            if (_sessionId == null)
-            {
-                Console.WriteLine("Cannot get all orders - not logged in");
-                return;
-            }
-
             string massStatusReqId = Guid.NewGuid().ToString().Replace("-", "");
 
             try
@@ -561,7 +486,7 @@ namespace QuickFixCli
                     new MassStatusReqType(MassStatusReqType.STATUS_FOR_ALL_ORDERS)
                 );
 
-                Session.SendToTarget(massStatusRequest, _sessionId);
+                SendMessage(massStatusRequest);
                 Console.WriteLine($"Requested status for all orders with ID {massStatusReqId}");
             }
             catch (Exception ex)

@@ -8,7 +8,6 @@ namespace QuickFixCli
     public class MarketDataClientApp : AuthClientApp
     {
         // Market data tracking
-        private SessionID? _sessionId;
         protected Dictionary<string, Dictionary<string, List<Tuple<double, double>>>> _prices = new();
         private List<string> _availableSymbols = new List<string>();
         private List<string> _desiredSymbols;
@@ -73,44 +72,26 @@ namespace QuickFixCli
         }
 
         #region Override IApplication Members
-
-        // Override OnCreate to store the sessionID
-        public override void OnCreate(SessionID sessionID)
-        {
-            base.OnCreate(sessionID);
-            _sessionId = sessionID;
-        }
-
         // Override OnLogon to request security list and start timer
-        public override void OnLogon(SessionID sessionID)
+        public new void OnLogon(SessionID sessionID)
         {
             base.OnLogon(sessionID);
-
             // Request security list after successful login
             if (!_securityListRequested)
             {
                 SendSecurityListRequest();
                 _securityListRequested = true;
             }
-
             // Start the timer to display market data
             _dataDisplayTimer.Start();
         }
 
         // Override OnLogout to stop timer
-        public override void OnLogout(SessionID sessionID)
+        public new void OnLogout(SessionID sessionID)
         {
             base.OnLogout(sessionID);
             _dataDisplayTimer.Stop();
         }
-
-        // Override FromApp to handle application-level messages
-        public override void FromApp(QuickFix.Message message, SessionID sessionID)
-        {
-            // Let MessageCracker handle specific message types
-            Crack(message, sessionID);
-        }
-
         #endregion
 
         #region Message Handlers
@@ -221,7 +202,7 @@ namespace QuickFixCli
 
         #region Market Data Functions
 
-        private void SendSecurityListRequest()
+        public void SendSecurityListRequest()
         {
             try
             {
@@ -239,7 +220,7 @@ namespace QuickFixCli
             }
         }
 
-        protected virtual void SendMarketDataRequest(List<string> symbols)
+        public void SendMarketDataRequest(List<string> symbols)
         {
             if (symbols == null || !symbols.Any())
             {
@@ -341,15 +322,6 @@ namespace QuickFixCli
             }
         }
 
-        public virtual void SendMessage(QuickFix.Message message)
-        {
-            if (_sessionId == null)
-            {
-                Console.WriteLine($"Warning: Session ID is null, cannot send message");
-                return;
-            }
-            Session.SendToTarget(message, _sessionId);
-        }
         #endregion
     }
 }
